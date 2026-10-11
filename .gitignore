@@ -1,0 +1,25 @@
+# Compilados de Java
+*.class
+out/
+bin/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Archivos temporales
+*.tmp
+*.bak
+*~
+
+# Guias y notas de trabajo locales individuales
+INSTRUCCIONES_*.md
+plan_*.md
+GUIA_METODOLOGICA_*.md
+
+# Diapositivas y material de estudio de la materia (mantener en PC, no subir a GitHub)
+parcial1/
+parcial2/
+parcial3/
