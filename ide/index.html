@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny++ Studio IDE & Depurador TM</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- BARRA SUPERIOR (TOOLBAR) -->
+        <header class="top-navbar" id="top-navbar">
+            <div class="brand-group">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Tiny++ <span class="accent-text">Studio</span></span>
+                    <span class="brand-badge">UNET 2026</span>
+                </div>
+            </div>
+
+            <!-- CONTROLES PRINCIPALES -->
+            <div class="toolbar-actions" id="toolbar-actions">
+                <div class="examples-dropdown-container">
+                    <label for="example-selector" class="sr-only">Ejemplo</label>
+                    <select id="example-selector" class="select-input">
+                        <option value="" disabled selected>📁 Cargar ejemplo Tiny++...</option>
+                        <option value="factorial">Factorial Recursivo</option>
+                        <option value="arreglos">Arreglos y Expresiones</option>
+                        <option value="ambitos">Ámbitos y Variables Locales</option>
+                        <option value="error">Detección de Errores</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons-group">
+                    <button id="btn-compile" class="btn btn-primary" title="Compilar código fuente Tiny++">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                        <span>Compilar</span>
+                    </button>
+
+                    <button id="btn-run" class="btn btn-success" title="Ejecutar simulación continua">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <span>Run</span>
+                    </button>
+
+                    <button id="btn-step" class="btn btn-secondary" title="Avanzar un paso en la Tiny Machine">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="5" x2="19" y2="19"></line>
+                        </svg>
+                        <span>Step</span>
+                    </button>
+
+                    <button id="btn-pause" class="btn btn-secondary" title="Pausar ejecución">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                        <span>Pausa</span>
+                    </button>
+
+                    <button id="btn-reset" class="btn btn-warning" title="Reiniciar memoria y registros TM">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                        <span>Reset</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- METADATA INTEGRANTE -->
+            <div class="user-meta">
+                <span class="user-tag">Módulo 4: IDE Visual</span>
+                <span class="user-name">Henyer Molina</span>
+            </div>
+        </header>
+
+        <!-- ÁREA PRINCIPAL DIVIDIDA (WORKSPACE) -->
+        <main class="main-workspace" id="main-workspace">
+            <!-- PANEL IZQUIERDO: EDITOR Y CONSOLA -->
+            <section class="pane left-pane" id="editor-section">
+                <!-- CABECERA DEL EDITOR -->
+                <div class="pane-header">
+                    <div class="tab-item active">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span>programa.tny</span>
+                    </div>
+                    <div class="pane-controls">
+                        <span class="status-indicator-idle" id="editor-status">Listo</span>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DEL EDITOR DE CÓDIGO -->
+                <div class="editor-container" id="editor-container">
+                    <div class="line-numbers" id="line-numbers">1</div>
+                    <textarea id="code-editor" class="code-editor" spellcheck="false" placeholder="Escribe o carga tu código Tiny++ aquí...">{ Programa de prueba Tiny++ }
+int x, y;
+x := 5;
+y := x * 2;
+write y;
+</textarea>
+                </div>
+
+                <!-- PANEL INFERIOR: CONSOLA Y MENSAJES -->
+                <div class="console-panel" id="console-panel">
+                    <div class="console-header">
+                        <div class="console-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="4 17 10 11 4 5"></polyline>
+                                <line x1="12" y1="19" x2="20" y2="19"></line>
+                            </svg>
+                            <span>Consola del Sistema</span>
+                        </div>
+                        <button id="btn-clear-console" class="btn-icon" title="Limpiar consola">Limpiar</button>
+                    </div>
+                    <div class="console-output" id="console-output">
+                        <div class="console-line system-msg">[Sistema] IDE Tiny++ inicializado. Listo para compilar.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL DERECHO: DEPURADOR VISUAL DE LA TM -->
+            <section class="pane right-pane" id="debugger-section">
+                <!-- TARJETAS DE REGISTROS DE LA TM -->
+                <div class="registers-card" id="registers-panel">
+                    <div class="registers-header">
+                        <span class="card-title">Registros de la Tiny Machine</span>
+                        <span class="tm-status-pill" id="tm-status">STANDBY</span>
+                    </div>
+                    <div class="registers-grid">
+                        <div class="reg-box" id="reg-pc">
+                            <span class="reg-label">PC (0)</span>
+                            <span class="reg-value" id="val-pc">0</span>
+                        </div>
+                        <div class="reg-box" id="reg-gp">
+                            <span class="reg-label">GP (5)</span>
+                            <span class="reg-value" id="val-gp">0</span>
+                        </div>
+                        <div class="reg-box" id="reg-mp">
+                            <span class="reg-label">MP (6)</span>
+                            <span class="reg-value" id="val-mp">1023</span>
+                        </div>
+                        <div class="reg-box" id="reg-ac">
+                            <span class="reg-label">AC (0)</span>
+                            <span class="reg-value" id="val-ac">0</span>
+                        </div>
+                        <div class="reg-box" id="reg-ac1">
+                            <span class="reg-label">AC1 (1)</span>
+                            <span class="reg-value" id="val-ac1">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABS DE INSPECCIÓN (IMEM, DMEM, AST, TABLA DE SÍMBOLOS) -->
+                <div class="inspector-card" id="inspector-card">
+                    <div class="inspector-tabs">
+                        <button class="tab-btn active" data-tab="tab-imem">Instrucciones (IMem)</button>
+                        <button class="tab-btn" data-tab="tab-dmem">Datos (DMem)</button>
+                        <button class="tab-btn" data-tab="tab-ast">Árbol AST</button>
+                        <button class="tab-btn" data-tab="tab-symbols">Tabla Símbolos</button>
+                    </div>
+
+                    <div class="inspector-content">
+                        <!-- TAB 1: IMEM -->
+                        <div class="tab-pane active" id="tab-imem">
+                            <div class="memory-header">
+                                <span>Dir</span>
+                                <span>Instrucción TM</span>
+                                <span>Comentario</span>
+                            </div>
+                            <div class="memory-list" id="imem-list">
+                                <div class="memory-placeholder">No se ha cargado ningún programa objeto TM todavía. Pulsa "Compilar".</div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: DMEM -->
+                        <div class="tab-pane" id="tab-dmem">
+                            <div class="dmem-toolbar">
+                                <span class="dmem-subtitle">Espacio de Memoria de Datos (1024 celdas)</span>
+                            </div>
+                            <div class="memory-list" id="dmem-list">
+                                <div class="memory-placeholder">Memoria de datos vacía o en estado inicial.</div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: AST -->
+                        <div class="tab-pane" id="tab-ast">
+                            <div class="inspector-placeholder" id="ast-viewer">
+                                Compila un programa para inspeccionar la estructura sintáctica generada.
+                            </div>
+                        </div>
+
+                        <!-- TAB 4: TABLA DE SÍMBOLOS -->
+                        <div class="tab-pane" id="tab-symbols">
+                            <div class="inspector-placeholder" id="symbols-viewer">
+                                Compila un programa para inspeccionar los ámbitos y variables declaradas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- BARRA DE ESTADO INFERIOR -->
+        <footer class="bottom-statusbar" id="bottom-statusbar">
+            <div class="status-left">
+                <span class="status-item"><span class="dot-green"></span> Conectado</span>
+                <span class="status-item" id="cursor-pos">Lín: 1, Col: 1</span>
+                <span class="status-item">Tiny++ UTF-8</span>
+            </div>
+            <div class="status-right">
+                <span class="status-item">Tiny Machine: 1024 dMem | 1024 iMem</span>
+                <span class="status-item">UNET - Compiladores e Intérpretes</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts modulares desacoplados -->
+    <script src="js/editor.js"></script>
+    <script src="js/console.js"></script>
+    <script src="js/debugger-ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

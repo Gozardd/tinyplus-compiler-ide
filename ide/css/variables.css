@@ -1,0 +1,45 @@
+/* ==========================================================================
+   TINY++ STUDIO IDE - VARIABLES & DESIGN TOKENS
+   Autor: Henyer Molina (Módulo 4) - UNET 2026
+   ========================================================================== */
+
+:root {
+    /* Paleta Principal Dark Mode */
+    --bg-app: #080b11;
+    --bg-surface: #0f1523;
+    --bg-panel: #141c2e;
+    --bg-card: #18233a;
+    --bg-card-hover: #1e2b47;
+    --bg-input: #0c111c;
+
+    /* Bordes y Líneas divisoras */
+    --border-subtle: #1e2b42;
+    --border-active: #33486d;
+    --border-highlight: #38bdf8;
+
+    /* Acentos de Color */
+    --accent-primary: #38bdf8;       /* Cyan moderno */
+    --accent-primary-hover: #0ea5e9;
+    --accent-success: #10b981;       /* Esmeralda */
+    --accent-success-hover: #059669;
+    --accent-warning: #f59e0b;       /* Ámbar */
+    --accent-danger: #f43f5e;        /* Carmesí */
+    --accent-indigo: #6366f1;
+
+    /* Tipografía y Textos */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --text-on-accent: #0f172a;
+
+    /* Fuentes */
+    --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Dimensiones fijas */
+    --header-height: 58px;
+    --footer-height: 28px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+}
