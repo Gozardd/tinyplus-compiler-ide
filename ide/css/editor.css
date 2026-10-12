@@ -124,10 +124,62 @@
 }
 
 .console-line {
-    line-height: 1.5;
+    line-height: 1.6;
     color: var(--text-secondary);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.console-time {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+}
+
+.console-tag {
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .system-msg {
     color: var(--accent-primary);
+}
+.system-msg .console-tag {
+    color: var(--accent-primary);
+}
+
+.info-msg {
+    color: #cbd5e1;
+}
+.info-msg .console-tag {
+    color: #94a3b8;
+}
+
+.success-msg {
+    color: #a7f3d0;
+}
+.success-msg .console-tag {
+    color: var(--accent-success);
+}
+
+.warning-msg {
+    color: #fde68a;
+}
+.warning-msg .console-tag {
+    color: var(--accent-warning);
+}
+
+.error-msg {
+    color: #fca5a5;
+    background-color: rgba(244, 63, 94, 0.08);
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+}
+.error-msg .console-tag {
+    color: var(--accent-danger);
 }
