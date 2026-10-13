@@ -6,4 +6,6 @@
 @import 'variables.css';
 @import 'layout.css';
 @import 'editor.css';
+@import 'console.css';
 @import 'debugger.css';
+@import 'modals.css';

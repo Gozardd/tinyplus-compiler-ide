@@ -9,8 +9,36 @@ const TinyConsole = {
         this.output = document.getElementById('console-output');
         this.clearBtn = document.getElementById('btn-clear-console');
 
+        this.setupTabs();
+
         if (this.clearBtn) {
             this.clearBtn.addEventListener('click', () => this.clear());
+        }
+    },
+
+    /**
+     * Alternador de pestañas inferiores: Consola del Sistema vs Registro E/S
+     */
+    setupTabs() {
+        const tabConsole = document.getElementById('tab-btn-console');
+        const tabIO = document.getElementById('tab-btn-io');
+        const viewConsole = document.getElementById('console-output');
+        const viewIO = document.getElementById('io-panel-output');
+
+        if (tabConsole && tabIO && viewConsole && viewIO) {
+            tabConsole.addEventListener('click', () => {
+                tabConsole.classList.add('active');
+                tabIO.classList.remove('active');
+                viewConsole.style.display = 'block';
+                viewIO.style.display = 'none';
+            });
+
+            tabIO.addEventListener('click', () => {
+                tabIO.classList.add('active');
+                tabConsole.classList.remove('active');
+                viewIO.style.display = 'flex';
+                viewConsole.style.display = 'none';
+            });
         }
     },
 
@@ -26,6 +54,11 @@ const TinyConsole = {
         this.system('Consola despejada.');
         if (window.TinyEditor && typeof window.TinyEditor.clearErrorHighlight === 'function') {
             window.TinyEditor.clearErrorHighlight();
+        }
+        if (window.TinyIO && typeof window.TinyIO.clearLog === 'function') {
+            window.TinyIO.clearLog();
+        } else if (window.TinyDebuggerUI && typeof window.TinyDebuggerUI.clearIOLog === 'function') {
+            window.TinyDebuggerUI.clearIOLog();
         }
     },
 

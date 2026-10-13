@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TINY++ STUDIO IDE - ESTILOS DEL EDITOR Y CONSOLA (ESTILO VS CODE / DESKTOP)
+   TINY++ STUDIO IDE - ESTILOS DEL EDITOR DE CÓDIGO (VS CODE DARK+)
    Autor: Henyer Molina (Módulo 4) - UNET 2026
    ========================================================================== */
 
@@ -68,17 +68,21 @@
 
 .line-num {
     height: 20px;
-    line-height: 20px;
-    padding-right: 2px;
-    font-variant-numeric: tabular-nums;
+    display: block;
+    cursor: pointer;
 }
 
-.line-num.error {
+.line-num:hover {
+    color: #c6c6c6;
+}
+
+.line-num.has-error {
     color: #f14c4c;
     font-weight: bold;
+    position: relative;
 }
 
-.line-num.error::before {
+.line-num.has-error::before {
     content: '●';
     font-size: 8px;
     color: #f14c4c;
@@ -92,264 +96,96 @@
     background-color: var(--bg-editor);
 }
 
-/* Marcador visual de error sobrio (sin neones) */
-.error-line-marker {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 20px;
-    background-color: rgba(241, 76, 76, 0.16);
-    border-left: 3px solid #f14c4c;
-    pointer-events: none;
-    z-index: 1;
-    display: none;
-    box-sizing: border-box;
-}
-
-.error-line-marker.active {
-    display: block;
-}
-
-/* Capas superpuestas del editor */
-.code-highlight-layer,
-.code-editor {
+.code-editor,
+.code-highlight-layer {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 8px 12px;
+    padding: 8px 10px;
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 20px;
-    tab-size: 4;
-    -moz-tab-size: 4;
-    letter-spacing: normal;
-    box-sizing: border-box;
+    letter-spacing: 0;
     white-space: pre;
     word-wrap: normal;
-    border: none;
-    outline: none;
-}
-
-.code-highlight-layer {
-    pointer-events: none;
-    overflow: hidden;
-    background: transparent;
-    z-index: 2;
-    color: #d4d4d4;
-}
-
-.code-highlight-layer code {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    tab-size: inherit;
+    tab-size: 4;
+    box-sizing: border-box;
 }
 
 .code-editor {
-    background: transparent;
+    z-index: 2;
     color: transparent;
-    caret-color: #569cd6;
-    overflow: auto;
+    background: transparent;
+    caret-color: #ffffff;
+    border: none;
+    outline: none;
     resize: none;
-    z-index: 3;
+    overflow: auto;
 }
 
-.code-editor::selection {
-    background: #264f78;
-    color: transparent;
+.code-highlight-layer {
+    z-index: 1;
+    pointer-events: none;
+    color: var(--text-primary);
+    background-color: transparent;
+    overflow: hidden;
+}
+
+/* Marcador visual de línea con error */
+.error-line-marker {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: rgba(241, 76, 76, 0.12);
+    border-left: 3px solid #f14c4c;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
+    transition: top 0.15s ease;
+}
+
+.error-line-marker.active {
+    display: block;
 }
 
 /* ==========================================================================
-   PALETA DE SINTAXIS ESTILO VS CODE DARK+ (OFICIAL Y AUTÉNTICO)
+   COLORES DE RESALTADO SINTÁCTICO TINY++ (TEMA VS CODE DARK+)
    ========================================================================== */
-.tok-comment {
-    color: #6a9955; /* Verde clásico de comentarios en VS Code */
-    font-style: italic;
-}
-
-.tok-string {
-    color: #ce9178; /* Terracota cálido de strings */
+.tok-keyword {
+    color: #569cd6; /* Azul de palabras clave (if, then, while, int...) */
+    font-weight: 600;
 }
 
 .tok-type {
-    color: #4ec9b0; /* Teal de tipos de datos en C/Java */
+    color: #4ec9b0; /* Verdeazulado para tipos primitivos */
 }
 
-.tok-bool {
-    color: #569cd6; /* Azul de literales booleanos */
+.tok-number {
+    color: #b5cea8; /* Verde claro para literales numéricos */
 }
 
-.tok-kw {
-    color: #c586c0; /* Púrpura de palabras clave de control */
-    font-weight: 500;
+.tok-string {
+    color: #ce9178; /* Naranja rojizo para cadenas de caracteres */
 }
 
-.tok-num {
-    color: #b5cea8; /* Verde salvia claro de enteros */
+.tok-comment {
+    color: #6a9955; /* Verde olivo clásico para comentarios { ... } */
+    font-style: italic;
 }
 
 .tok-op {
-    color: #d4d4d4; /* Blanco grisáceo de operadores */
+    color: #d4d4d4; /* Gris claro para operadores */
 }
 
-.tok-punct {
-    color: #808080; /* Gris de puntuación */
+.tok-assign {
+    color: #569cd6;
+    font-weight: 600;
 }
 
 .tok-id {
     color: #9cdcfe; /* Azul cielo de variables/identificadores */
-}
-
-/* ==========================================================================
-   CONSOLA DEL SISTEMA / TERMINAL INTEGRADA
-   ========================================================================== */
-.console-panel {
-    height: 160px;
-    min-height: 28px;
-    max-height: 85%;
-    flex: none;
-    background-color: #181818;
-    display: flex;
-    flex-direction: column;
-}
-
-.console-header {
-    height: 28px;
-    background-color: #252526;
-    border-bottom: 1px solid #1e1e1e;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0.75rem;
-}
-
-.console-title {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #969696;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.btn-icon {
-    background: transparent;
-    border: none;
-    color: #888888;
-    font-size: 0.72rem;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
-}
-
-.btn-icon:hover {
-    color: #ffffff;
-    background-color: #333333;
-}
-
-.console-output {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    overflow-y: auto;
-    background-color: #181818;
-}
-
-.console-line {
-    line-height: 1.5;
-    color: #cccccc;
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    padding: 2px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.console-time {
-    color: #6e7681;
-    font-size: 0.7rem;
-    font-family: var(--font-mono);
-}
-
-.console-tag {
-    font-weight: 600;
-    font-size: 0.7rem;
-}
-
-.system-msg {
-    color: #cccccc;
-}
-.system-msg .console-tag {
-    color: #569cd6;
-}
-
-.info-msg {
-    color: #cccccc;
-}
-.info-msg .console-tag {
-    color: #9cdcfe;
-}
-
-.success-msg {
-    color: #4ec9b0;
-}
-.success-msg .console-tag {
-    color: #4ec9b0;
-}
-
-.warning-msg {
-    color: #dcdcaa;
-}
-.warning-msg .console-tag {
-    color: #dcdcaa;
-}
-
-/* Mensajes de error formateados como compilador real */
-.error-msg {
-    color: #f14c4c;
-    background-color: rgba(241, 76, 76, 0.07);
-    padding: 2px 4px;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-.error-msg .console-tag {
-    color: #f14c4c;
-}
-
-.error-text {
-    flex: 1;
-    color: #f87171;
-}
-
-/* Botón de hipervínculo técnico para salto a línea */
-.error-nav-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background-color: transparent;
-    color: #4fc1ff;
-    border: 1px solid #3c3c3c;
-    border-radius: var(--radius-sm);
-    padding: 1px 6px;
-    font-size: 0.72rem;
-    font-family: var(--font-mono);
-    cursor: pointer;
-    text-decoration: none;
-    margin-left: auto;
-}
-
-.error-nav-btn:hover {
-    background-color: #264f78;
-    color: #ffffff;
-    border-color: #007acc;
-    text-decoration: underline;
 }
