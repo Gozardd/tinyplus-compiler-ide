@@ -188,6 +188,9 @@ function setupCompilation() {
                 // Cargar código objeto en la memoria de la Tiny Machine
                 const selector = document.getElementById('example-selector');
                 const selectedKey = selector ? selector.value : 'factorial';
+                const currentPreset = window.TinyExamples ? window.TinyExamples.get(selectedKey) : null;
+                const isCustom = !currentPreset || currentPreset.code.trim() !== code.trim();
+
                 if (window.TinyDebuggerUI) {
                     window.TinyDebuggerUI.loadSampleProgram(selectedKey || 'factorial');
                     window.TinyConsole.info('Instrucciones ensamblador cargadas en IMem. Depurador TM listo.');
@@ -195,7 +198,7 @@ function setupCompilation() {
 
                 // Actualizar árbol AST y tabla de símbolos con el código compilado
                 if (window.TinyInspector) {
-                    window.TinyInspector.updateFromSource(code, selectedKey);
+                    window.TinyInspector.updateFromSource(code, isCustom ? null : selectedKey);
                 }
             }
         }
