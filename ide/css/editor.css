@@ -43,12 +43,12 @@
 
 /* Área del editor de código */
 .editor-container {
-    flex: 3;
+    flex: 1;
+    min-height: 80px;
     display: flex;
     background-color: var(--bg-editor);
     overflow: hidden;
     position: relative;
-    border-bottom: 1px solid var(--border-subtle);
 }
 
 .line-numbers {
@@ -207,11 +207,13 @@
    CONSOLA DEL SISTEMA / TERMINAL INTEGRADA
    ========================================================================== */
 .console-panel {
-    flex: 1.5;
+    height: 160px;
+    min-height: 28px;
+    max-height: 85%;
+    flex: none;
     background-color: #181818;
     display: flex;
     flex-direction: column;
-    min-height: 130px;
 }
 
 .console-header {

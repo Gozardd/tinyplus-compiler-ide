@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Inicializar módulos base
     window.TinyEditor.init();
     window.TinyConsole.init();
+    if (window.TinyResizer) window.TinyResizer.init();
     window.TinyDebuggerUI.init();
     window.TinyDebuggerUI.loadSampleProgram('factorial');
 

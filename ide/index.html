@@ -127,6 +127,9 @@ write y;
                     </div>
                 </div>
 
+                <!-- DIVISOR HORIZONTAL ENTRE EDITOR Y CONSOLA -->
+                <div class="resizer resizer-vertical" id="resizer-console" title="Arrastra verticalmente para redimensionar la consola"></div>
+
                 <!-- PANEL INFERIOR: CONSOLA Y MENSAJES -->
                 <div class="console-panel" id="console-panel">
                     <div class="console-header">
@@ -144,6 +147,9 @@ write y;
                     </div>
                 </div>
             </section>
+
+            <!-- DIVISOR VERTICAL PRINCIPAL ENTRE EDITOR Y DEPURADOR -->
+            <div class="resizer resizer-horizontal" id="resizer-main" title="Arrastra horizontalmente para redimensionar paneles"></div>
 
             <!-- PANEL DERECHO: DEPURADOR VISUAL DE LA TM -->
             <section class="pane right-pane" id="debugger-section">
@@ -261,12 +267,12 @@ write y;
             <div class="status-left">
                 <span class="status-item"><span class="dot-green"></span> Listo</span>
                 <span class="status-item" id="cursor-pos">Lín: 1, Col: 1</span>
-                <span class="status-item">Tiny++ UTF-8</span>
+                <span class="status-item">UTF-8</span>
+                <span class="status-item">Tiny++</span>
             </div>
             <div class="status-right">
-                <span class="status-item">TM: 1024 celdas</span>
+                <span class="status-item">TM: 1024 DMem | 1024 IMem</span>
                 <span class="status-item">UNET 2026</span>
-                <span class="status-item">Módulo 4: Henyer Molina</span>
             </div>
         </footer>
     </div>
@@ -307,6 +313,7 @@ write y;
     <script src="js/examples.js"></script>
     <script src="js/highlighter.js"></script>
     <script src="js/validator.js"></script>
+    <script src="js/resizer.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/console.js"></script>
     <script src="js/debugger-ui.js"></script>
