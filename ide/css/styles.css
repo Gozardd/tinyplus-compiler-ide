@@ -1,0 +1,13 @@
+/* ==========================================================================
+   TINY++ STUDIO IDE - ÍNDICE PRINCIPAL DE ESTILOS
+   Autor: Henyer Molina (Módulo 4) - UNET 2026
+   ========================================================================== */
+
+@import 'variables.css';
+@import 'layout.css';
+@import 'editor.css';
+@import 'console.css';
+@import 'debugger.css';
+@import 'ast.css';
+@import 'symbols.css';
+@import 'modals.css';

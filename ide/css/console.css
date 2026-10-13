@@ -1,0 +1,260 @@
+/* ==========================================================================
+   TINY++ STUDIO IDE - ESTILOS DE LA CONSOLA Y REGISTRO E/S
+   Autor: Henyer Molina (Módulo 4) - UNET 2026
+   ========================================================================== */
+
+/* Panel Inferior de Consola */
+.console-panel {
+    height: 160px;
+    min-height: 28px;
+    max-height: 85%;
+    flex: none;
+    background-color: #181818;
+    display: flex;
+    flex-direction: column;
+}
+
+.console-header {
+    height: 28px;
+    background-color: #252526;
+    border-bottom: 1px solid #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem;
+}
+
+/* Selector de pestañas de consola (Consola vs Registro E/S) */
+.console-tabs-group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.console-tab-btn {
+    background: transparent;
+    border: none;
+    color: #888888;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.22rem 0.55rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.12s ease;
+}
+
+.console-tab-btn:hover {
+    color: #cccccc;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.console-tab-btn.active {
+    color: #ffffff;
+    background-color: #181818;
+    font-weight: 600;
+}
+
+.console-tab-btn * {
+    pointer-events: none;
+}
+
+.io-count-badge {
+    background-color: #333333;
+    color: #4ec9b0;
+    border: 1px solid #444444;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    padding: 0 5px;
+    border-radius: 10px;
+    line-height: 14px;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: #888888;
+    font-size: 0.72rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.btn-icon:hover {
+    color: #ffffff;
+    background-color: #333333;
+}
+
+/* Área de Salida de Consola */
+.console-output {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    overflow-y: auto;
+    background-color: #181818;
+}
+
+.console-line {
+    line-height: 1.5;
+    color: #cccccc;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.console-time {
+    color: #6e7681;
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+}
+
+.console-tag {
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+.system-msg { color: #cccccc; }
+.system-msg .console-tag { color: #569cd6; }
+
+.info-msg { color: #cccccc; }
+.info-msg .console-tag { color: #9cdcfe; }
+
+.success-msg { color: #4ec9b0; }
+.success-msg .console-tag { color: #4ec9b0; }
+
+.warning-msg { color: #dcdcaa; }
+.warning-msg .console-tag { color: #dcdcaa; }
+
+/* Mensajes de error formateados e interactivos */
+.error-msg {
+    color: #f14c4c;
+    background-color: rgba(241, 76, 76, 0.07);
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.error-msg .console-tag { color: #f14c4c; }
+.error-text { flex: 1; color: #f87171; }
+
+.error-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: transparent;
+    color: #4fc1ff;
+    border: 1px solid #3c3c3c;
+    border-radius: var(--radius-sm);
+    padding: 1px 6px;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: auto;
+}
+
+.error-nav-btn:hover {
+    background-color: #264f78;
+    color: #ffffff;
+    border-color: #007acc;
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   PANEL DE REGISTRO VISUAL E/S (TABLA OUT / IN)
+   ========================================================================== */
+.io-panel-output {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #181818;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+}
+
+.io-table-header {
+    display: grid;
+    grid-template-columns: 75px 65px 50px 75px 90px 100px 1fr;
+    background-color: #202020;
+    border-bottom: 1px solid #2d2d2d;
+    padding: 4px 0.75rem;
+    color: #888888;
+    font-size: 0.68rem;
+    font-weight: 600;
+    user-select: none;
+}
+
+.io-events-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.io-row {
+    display: grid;
+    grid-template-columns: 75px 65px 50px 75px 90px 100px 1fr;
+    padding: 3px 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    align-items: center;
+    line-height: 20px;
+}
+
+.io-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.io-row.io-row-new {
+    animation: flashRow 1.2s ease-out;
+}
+
+.col-io-time { color: #6e7681; font-size: 0.7rem; }
+
+.col-io-type .io-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+}
+
+.io-tag.tag-out {
+    background-color: rgba(78, 201, 176, 0.15);
+    color: #4ec9b0;
+    border: 1px solid rgba(78, 201, 176, 0.4);
+}
+
+.io-tag.tag-in {
+    background-color: rgba(86, 156, 214, 0.15);
+    color: #569cd6;
+    border: 1px solid rgba(86, 156, 214, 0.4);
+}
+
+.col-io-pc { color: #9cdcfe; }
+.col-io-reg { color: #dcdcaa; }
+.col-io-dec { color: #ffffff; font-weight: 600; }
+.col-io-hex { color: #b5cea8; font-size: 0.72rem; }
+
+.col-io-note {
+    color: #888888;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.io-empty-placeholder {
+    color: #666666;
+    font-family: var(--font-ui);
+    font-size: 0.76rem;
+    text-align: center;
+    padding: 2.5rem 1rem;
+}

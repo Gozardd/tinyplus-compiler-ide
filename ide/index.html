@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny++ Studio IDE & Depurador TM</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- BARRA SUPERIOR (TOOLBAR) -->
+        <header class="top-navbar" id="top-navbar">
+            <div class="brand-group">
+                <div class="brand-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Tiny++ Studio</span>
+                    <span class="brand-subtitle">IDE & Depurador TM</span>
+                </div>
+            </div>
+
+            <!-- CONTROLES PRINCIPALES -->
+            <div class="toolbar-actions" id="toolbar-actions">
+                <div class="examples-dropdown-container">
+                    <label for="example-selector" class="sr-only">Ejemplo</label>
+                    <select id="example-selector" class="select-input">
+                        <option value="" disabled selected>Cargar ejemplo Tiny++...</option>
+                        <option value="factorial">Factorial Recursivo</option>
+                        <option value="arreglos">Arreglos y Expresiones</option>
+                        <option value="ambitos">Ámbitos y Variables Locales</option>
+                        <option value="error">Detección de Errores</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons-group">
+                    <button id="btn-compile" class="btn btn-primary" title="Compilar código fuente Tiny++">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                        <span>Compilar</span>
+                    </button>
+
+                    <button id="btn-run" class="btn btn-success" title="Ejecutar simulación continua">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <span>Run</span>
+                    </button>
+
+                    <button id="btn-step" class="btn btn-secondary" title="Avanzar un paso en la Tiny Machine">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="5" x2="19" y2="19"></line>
+                        </svg>
+                        <span>Step</span>
+                    </button>
+
+                    <button id="btn-pause" class="btn btn-secondary" title="Pausar ejecución">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                        <span>Pausa</span>
+                    </button>
+
+                    <button id="btn-reset" class="btn btn-warning" title="Reiniciar memoria y registros TM">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                        <span>Reset</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTÓN ACERCA DE (CRÉDITOS Y EQUIPO) -->
+            <div class="toolbar-right">
+                <button id="btn-about" class="btn-about" title="Acerca del proyecto y equipo UNET">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Acerca de</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ÁREA PRINCIPAL DIVIDIDA (WORKSPACE) -->
+        <main class="main-workspace" id="main-workspace">
+            <!-- PANEL IZQUIERDO: EDITOR Y CONSOLA -->
+            <section class="pane left-pane" id="editor-section">
+                <!-- CABECERA DEL EDITOR -->
+                <div class="pane-header">
+                    <div class="tab-item active">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span id="tab-filename">programa.tny</span>
+                    </div>
+                    <div class="pane-controls">
+                        <span class="status-indicator-idle" id="editor-status">Listo</span>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DEL EDITOR DE CÓDIGO -->
+                <div class="editor-container" id="editor-container">
+                    <div class="line-numbers" id="line-numbers"></div>
+                    <div class="editor-viewport" id="editor-viewport">
+                        <div class="error-line-marker" id="error-line-marker"></div>
+                        <pre class="code-highlight-layer" id="code-highlight-layer" aria-hidden="true"><code id="code-highlight-content"></code></pre>
+                        <textarea id="code-editor" class="code-editor" spellcheck="false" placeholder="Escribe o carga tu código Tiny++ aquí...">{ Programa de prueba Tiny++ }
+int x, y;
+x := 5;
+y := x * 2;
+write y;
+</textarea>
+                    </div>
+                </div>
+
+                <!-- DIVISOR HORIZONTAL ENTRE EDITOR Y CONSOLA -->
+                <div class="resizer resizer-vertical" id="resizer-console" title="Arrastra verticalmente para redimensionar la consola"></div>
+
+                <!-- PANEL INFERIOR: CONSOLA Y MENSAJES -->
+                <div class="console-panel" id="console-panel">
+                    <div class="console-header">
+                        <div class="console-tabs-group">
+                            <button class="console-tab-btn active" id="tab-btn-console" data-view="console">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="4 17 10 11 4 5"></polyline>
+                                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                                </svg>
+                                <span>Consola del Sistema</span>
+                            </button>
+                            <button class="console-tab-btn" id="tab-btn-io" data-view="io">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 16 12 12 8 16"></polyline>
+                                    <line x1="12" y1="12" x2="12" y2="21"></line>
+                                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                </svg>
+                                <span>Registro E/S (OUT / IN)</span>
+                                <span class="io-count-badge" id="io-out-count">0</span>
+                            </button>
+                        </div>
+                        <button id="btn-clear-console" class="btn-icon" title="Limpiar contenido de la consola y registro de salidas">Limpiar</button>
+                    </div>
+
+                    <!-- VISTA 1: CONSOLA DEL SISTEMA -->
+                    <div class="console-output active" id="console-output">
+                        <div class="console-line system-msg">[Sistema] IDE Tiny++ Studio listo. Compilador y depurador TM preparados.</div>
+                    </div>
+
+                    <!-- VISTA 2: REGISTRO VISUAL DE E/S (OUT/IN) -->
+                    <div class="io-panel-output" id="io-panel-output" style="display: none;">
+                        <div class="io-table-header">
+                            <span class="col-io-time">Hora</span>
+                            <span class="col-io-type">Tipo</span>
+                            <span class="col-io-pc">PC</span>
+                            <span class="col-io-reg">Registro</span>
+                            <span class="col-io-dec">Decimal</span>
+                            <span class="col-io-hex">Hexadecimal</span>
+                            <span class="col-io-note">Detalle</span>
+                        </div>
+                        <div class="io-events-list" id="io-events-list">
+                            <div class="io-empty-placeholder">No se han emitido instrucciones de Entrada o Salida (IN / OUT) todavía.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DIVISOR VERTICAL PRINCIPAL ENTRE EDITOR Y DEPURADOR -->
+            <div class="resizer resizer-horizontal" id="resizer-main" title="Arrastra horizontalmente para redimensionar paneles"></div>
+
+            <!-- PANEL DERECHO: DEPURADOR VISUAL DE LA TM -->
+            <section class="pane right-pane" id="debugger-section">
+                <!-- TARJETAS DE REGISTROS DE LA TM -->
+                <div class="registers-card" id="registers-panel">
+                    <div class="registers-header">
+                        <span class="card-title">Registros de la Tiny Machine</span>
+                        <span class="tm-status-pill" id="tm-status">STANDBY</span>
+                    </div>
+                    <div class="registers-grid">
+                        <div class="reg-box" id="reg-pc" title="Registro 7: Contador de Programa (PC) - Dirección de la próxima instrucción">
+                            <span class="reg-label">PC (r7)</span>
+                            <span class="reg-value" id="val-pc">0</span>
+                        </div>
+                        <div class="reg-box" id="reg-gp" title="Registro 5: Puntero Global (GP) - Base de variables estáticas y globales">
+                            <span class="reg-label">GP (r5)</span>
+                            <span class="reg-value" id="val-gp">0</span>
+                        </div>
+                        <div class="reg-box" id="reg-mp" title="Registro 6: Puntero de Memoria / Marco de Pila (MP) - Marco de activación">
+                            <span class="reg-label">MP (r6)</span>
+                            <span class="reg-value" id="val-mp">1023</span>
+                        </div>
+                        <div class="reg-box" id="reg-ac" title="Registro 0: Acumulador Principal (AC) - Resultados y retornos">
+                            <span class="reg-label">AC (r0)</span>
+                            <span class="reg-value" id="val-ac">0</span>
+                        </div>
+                        <div class="reg-box" id="reg-ac1" title="Registro 1: Acumulador Secundario (AC1) - Segundo operando temporal">
+                            <span class="reg-label">AC1 (r1)</span>
+                            <span class="reg-value" id="val-ac1">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABS DE INSPECCIÓN (IMEM, DMEM, AST, TABLA DE SÍMBOLOS) -->
+                <div class="inspector-card" id="inspector-card">
+                    <div class="inspector-tabs">
+                        <button class="tab-btn active" data-tab="tab-imem">Instrucciones (IMem)</button>
+                        <button class="tab-btn" data-tab="tab-dmem">Datos (DMem)</button>
+                        <button class="tab-btn" data-tab="tab-ast">Árbol AST</button>
+                        <button class="tab-btn" data-tab="tab-symbols">Tabla Símbolos</button>
+                    </div>
+
+                    <div class="inspector-content">
+                        <!-- TAB 1: IMEM (MEMORIA DE INSTRUCCIONES) -->
+                        <div class="tab-pane active" id="tab-imem">
+                            <div class="imem-toolbar">
+                                <div class="imem-stats">
+                                    <span class="stat-badge" id="imem-count">0 instrs</span>
+                                    <span class="stat-badge stat-bp" id="imem-bp-count">0 BPs</span>
+                                </div>
+                                <div class="imem-actions">
+                                    <label for="tm-speed-selector" class="sr-only">Velocidad</label>
+                                    <select id="tm-speed-selector" class="select-micro" title="Velocidad de ejecución en modo Run">
+                                        <option value="450">0.5x</option>
+                                        <option value="200" selected>1x</option>
+                                        <option value="60">3x</option>
+                                    </select>
+                                    <button id="btn-imem-topc" class="btn-micro" title="Desplazar la vista hasta la instrucción actual del PC">Ir al PC</button>
+                                    <button id="btn-imem-clearbp" class="btn-micro" title="Remover todos los puntos de interrupción">Limpiar BPs</button>
+                                </div>
+                            </div>
+                            <div class="memory-header imem-header">
+                                <span class="col-bp" title="Puntos de interrupción">BP</span>
+                                <span class="col-dir">Dir</span>
+                                <span class="col-code">Instrucción TM</span>
+                                <span class="col-comment">Comentario</span>
+                            </div>
+                            <div class="memory-list imem-list" id="imem-list">
+                                <div class="memory-placeholder">No se ha cargado ningún programa objeto TM todavía. Pulsa "Compilar".</div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: DMEM (MEMORIA DE DATOS - 1024 CELDAS) -->
+                        <div class="tab-pane" id="tab-dmem">
+                            <div class="dmem-toolbar">
+                                <div class="dmem-view-group">
+                                    <label for="dmem-view-mode" class="dmem-label">Vista:</label>
+                                    <select id="dmem-view-mode" class="select-input select-micro">
+                                        <option value="gp" selected>Variables Globales (GP: 0..)</option>
+                                        <option value="mp">Pila de Ejecución (MP: 1023..)</option>
+                                        <option value="active">Celdas con Valor (≠ 0)</option>
+                                        <option value="all">Todas las Celdas (0..1023)</option>
+                                    </select>
+                                </div>
+                                <div class="dmem-jump-group">
+                                    <input type="number" id="dmem-jump-input" placeholder="Celda #" min="0" max="1023" class="input-micro">
+                                    <button id="btn-dmem-jump" class="btn-micro" title="Saltar a la celda de memoria">Ir</button>
+                                </div>
+                            </div>
+                            <div class="memory-header dmem-header">
+                                <span class="col-dmem-dir">Dirección</span>
+                                <span class="col-dmem-dec">Valor (Dec)</span>
+                                <span class="col-dmem-hex">Valor (Hex)</span>
+                                <span class="col-dmem-role">Ámbito / Rol</span>
+                            </div>
+                            <div class="memory-list dmem-list" id="dmem-list">
+                                <div class="memory-placeholder">Memoria de datos vacía o en estado inicial.</div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: AST -->
+                        <div class="tab-pane" id="tab-ast">
+                            <div class="ast-container">
+                                <div class="inspector-toolbar">
+                                    <div class="inspector-stats">
+                                        <span class="stat-badge" id="ast-node-count">0 nodos</span>
+                                        <span class="stat-badge stat-bp" id="ast-program-badge">Tiny++ AST</span>
+                                    </div>
+                                    <div class="inspector-actions">
+                                        <button id="btn-ast-expand" class="btn-micro" title="Expandir todos los nodos del árbol">Expandir Todo</button>
+                                        <button id="btn-ast-collapse" class="btn-micro" title="Colapsar todos los nodos del árbol">Colapsar Todo</button>
+                                    </div>
+                                </div>
+                                <div class="ast-tree-container" id="ast-tree-root">
+                                    <div class="inspector-placeholder">Cargando árbol sintáctico AST...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 4: TABLA DE SÍMBOLOS -->
+                        <div class="tab-pane" id="tab-symbols">
+                            <div class="symbols-container">
+                                <div class="inspector-toolbar">
+                                    <div class="inspector-stats">
+                                        <span class="stat-badge" id="symbols-count">0 símbolos</span>
+                                        <label for="symbols-scope-filter" class="sr-only">Ámbito</label>
+                                        <select id="symbols-scope-filter" class="select-micro" title="Filtrar por ámbito de declaración">
+                                            <option value="all">Todos los ámbitos</option>
+                                        </select>
+                                    </div>
+                                    <div class="inspector-actions">
+                                        <label for="symbols-search-input" class="sr-only">Buscar símbolo</label>
+                                        <input type="text" id="symbols-search-input" placeholder="Buscar símbolo..." class="input-micro" style="width: 110px;">
+                                    </div>
+                                </div>
+                                <div class="symbols-table-header">
+                                    <span>Identificador</span>
+                                    <span>Tipo</span>
+                                    <span>Ámbito</span>
+                                    <span>Offset TM</span>
+                                    <span>Línea</span>
+                                </div>
+                                <div class="symbols-list" id="symbols-list">
+                                    <div class="inspector-placeholder">Cargando tabla de símbolos...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- BARRA DE ESTADO INFERIOR -->
+        <footer class="bottom-statusbar" id="bottom-statusbar">
+            <div class="status-left">
+                <span class="status-item"><span class="dot-green"></span> Listo</span>
+                <span class="status-item" id="cursor-pos">Lín: 1, Col: 1</span>
+                <span class="status-item">UTF-8</span>
+                <span class="status-item">Tiny++</span>
+            </div>
+            <div class="status-right">
+                <span class="status-item">TM: 1024 DMem | 1024 IMem</span>
+                <span class="status-item">UNET 2026</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- DIÁLOGO MODAL INTERACTIVO: ENTRADA TM (IN / READ) -->
+    <div class="modal-overlay" id="modal-io-input">
+        <div class="modal-dialog modal-dialog-sm">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 19 19 12"></polyline>
+                    </svg>
+                    <span>Entrada requerida (Instrucción IN)</span>
+                </div>
+                <button class="modal-close-btn" id="modal-io-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="io-modal-desc" id="io-modal-prompt-text">
+                    La Tiny Machine requiere un valor entero de entrada para el registro <strong id="io-modal-reg-label">r0 (AC)</strong> en la dirección <strong id="io-modal-pc-label">PC = 2</strong>:
+                </p>
+                <div class="io-input-wrapper">
+                    <div class="io-number-box">
+                        <input type="number" id="io-modal-input-val" class="io-input-field" placeholder="Ingresa un valor entero (ej: 5)" autofocus />
+                        <div class="io-spinners">
+                            <button type="button" class="io-spin-btn io-spin-up" id="btn-io-inc" title="Incrementar (+1)" tabindex="-1">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button" class="io-spin-btn io-spin-down" id="btn-io-dec" title="Decrementar (-1)" tabindex="-1">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="io-modal-actions">
+                    <button id="btn-io-modal-submit" class="btn btn-primary">Ingresar Valor (Enter)</button>
+                    <button id="btn-io-modal-cancel" class="btn btn-secondary">Pausar Ejecución</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIÁLOGO MODAL: ACERCA DE -->
+    <div class="modal-overlay" id="modal-about">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <span>Acerca de Tiny++ Studio IDE</span>
+                <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>Compilador Tiny++ & Depurador Visual TM</h4>
+                <p>Proyecto formal desarrollado para la asignatura <strong>Compiladores e Intérpretes</strong> en la Universidad Nacional Experimental del Táchira (UNET).</p>
+                <div class="team-list">
+                    <div class="team-member-row">
+                        <span class="team-member-name">Theryan Colmenares (V-31.060.894)</span>
+                        <span class="team-member-role">Módulo 1: Frontend & Semántica</span>
+                    </div>
+                    <div class="team-member-row">
+                        <span class="team-member-name">Ismael Hidalgo (V-31.470.047)</span>
+                        <span class="team-member-role">Módulo 2: Backend TM</span>
+                    </div>
+                    <div class="team-member-row">
+                        <span class="team-member-name">Santiago Hernández (V-31.098.297)</span>
+                        <span class="team-member-role">Módulo 3: Simulador TM</span>
+                    </div>
+                    <div class="team-member-row">
+                        <span class="team-member-name"><strong>Henyer Molina (V-31.098.304)</strong></span>
+                        <span class="team-member-role">Módulo 4: IDE Visual & Integración</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts modulares desacoplados -->
+    <script src="js/examples.js"></script>
+    <script src="js/tm-presets.js"></script>
+    <script src="js/highlighter.js"></script>
+    <script src="js/validator.js"></script>
+    <script src="js/resizer.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/console.js"></script>
+    <script src="js/io-manager.js"></script>
+    <script src="js/tm-machine.js"></script>
+    <script src="js/debugger-ui.js"></script>
+    <script src="js/inspector-presets.js"></script>
+    <script src="js/ast-viewer.js"></script>
+    <script src="js/symbols-viewer.js"></script>
+    <script src="js/inspector.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

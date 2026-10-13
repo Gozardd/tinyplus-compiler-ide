@@ -1,0 +1,514 @@
+/* ==========================================================================
+   TINY++ STUDIO IDE - ESTILOS DEL DEPURADOR VISUAL TM (ESTILO DESKTOP GDB)
+   Autor: Henyer Molina (Módulo 4) - UNET 2026
+   ========================================================================== */
+
+/* Panel de Registros de la TM */
+.registers-card {
+    background-color: #252526;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0.5rem 0.75rem;
+}
+
+.registers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.card-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #969696;
+}
+
+.tm-status-pill {
+    font-size: 0.68rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    background: #333333;
+    color: #cccccc;
+    border: 1px solid #444444;
+    transition: all 0.2s ease;
+}
+
+.tm-status-pill.status-ready {
+    background: rgba(78, 201, 176, 0.15);
+    color: #4ec9b0;
+    border-color: rgba(78, 201, 176, 0.4);
+}
+
+.tm-status-pill.status-running {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.5);
+    animation: pulseStatus 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseStatus {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; border-color: #38bdf8; }
+    100% { opacity: 0.8; }
+}
+
+.tm-status-pill.status-paused {
+    background: rgba(229, 192, 123, 0.2);
+    color: #e5c07b;
+    border-color: rgba(229, 192, 123, 0.5);
+}
+
+.tm-status-pill.status-halted {
+    background: rgba(142, 142, 142, 0.2);
+    color: #cccccc;
+    border-color: #666666;
+}
+
+.tm-status-pill.status-error {
+    background: rgba(241, 76, 76, 0.2);
+    color: #f14c4c;
+    border-color: rgba(241, 76, 76, 0.5);
+}
+
+.registers-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.4rem;
+}
+
+.reg-box {
+    background-color: #1e1e1e;
+    border: 1px solid #2d2d2d;
+    border-radius: var(--radius-sm);
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+
+.reg-box:hover {
+    border-color: #007acc;
+    background-color: #232729;
+}
+
+/* Destello sutil cuando un registro cambia de valor */
+.reg-box.reg-changed {
+    animation: flashReg 0.7s ease-out;
+}
+
+@keyframes flashReg {
+    0% {
+        background-color: rgba(229, 192, 123, 0.45);
+        border-color: #cca700;
+        transform: translateY(-1px);
+    }
+    100% {
+        background-color: #1e1e1e;
+        border-color: #2d2d2d;
+        transform: translateY(0);
+    }
+}
+
+.reg-label {
+    font-size: 0.68rem;
+    color: #858585;
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+
+.reg-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4ec9b0;
+    font-family: var(--font-mono);
+    margin-top: 1px;
+}
+
+/* Inspector y Pestañas de Memoria */
+.inspector-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-editor);
+    overflow: hidden;
+}
+
+.inspector-tabs {
+    display: flex;
+    background-color: #252526;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #888888;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.45rem 0.4rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.1s ease;
+}
+
+.tab-btn:hover {
+    color: #cccccc;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tab-btn.active {
+    color: #ffffff;
+    border-bottom-color: #007acc;
+    background-color: var(--bg-editor);
+}
+
+.inspector-content {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    background-color: var(--bg-editor);
+}
+
+.tab-pane {
+    display: none;
+    height: 100%;
+}
+
+.tab-pane.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   BARRAS DE HERRAMIENTAS Y CONTROLES DE IMEM Y DMEM
+   ========================================================================== */
+.imem-toolbar, .dmem-toolbar {
+    height: 28px;
+    background-color: #252526;
+    border-bottom: 1px solid #2d2d2d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.5rem;
+    font-size: 0.72rem;
+}
+
+.imem-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.stat-badge {
+    background-color: #1e1e1e;
+    color: #888888;
+    border: 1px solid #333333;
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+}
+
+.stat-badge.stat-bp.has-bp {
+    color: #f14c4c;
+    border-color: rgba(241, 76, 76, 0.4);
+    background-color: rgba(241, 76, 76, 0.1);
+}
+
+.imem-actions, .dmem-jump-group {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-micro {
+    height: 20px;
+    background-color: #333333;
+    border: 1px solid #444444;
+    color: #cccccc;
+    font-size: 0.68rem;
+    font-family: var(--font-ui);
+    padding: 0 0.45rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.btn-micro:hover {
+    background-color: #3e3e42;
+    color: #ffffff;
+}
+
+.dmem-view-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.dmem-label {
+    color: #888888;
+    font-size: 0.7rem;
+}
+
+.select-micro {
+    height: 20px;
+    background-color: #1e1e1e;
+    border: 1px solid #3c3c3c;
+    color: #cccccc;
+    font-size: 0.7rem;
+    padding: 0 0.3rem;
+    border-radius: var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+}
+
+.input-micro {
+    height: 20px;
+    width: 60px;
+    background-color: #1e1e1e;
+    border: 1px solid #3c3c3c;
+    color: #cccccc;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0 0.3rem;
+    border-radius: var(--radius-sm);
+    outline: none;
+}
+
+.input-micro:focus {
+    border-color: #007acc;
+}
+
+/* ==========================================================================
+   TABLA DE INSTRUCCIONES TM (IMEM)
+   ========================================================================== */
+.memory-header.imem-header {
+    display: grid;
+    grid-template-columns: 28px 45px 150px 1fr;
+    padding: 0.35rem 0.5rem;
+    background-color: #252526;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #888888;
+    border-bottom: 1px solid #2d2d2d;
+    font-family: var(--font-mono);
+    user-select: none;
+}
+
+.imem-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.imem-row {
+    display: grid;
+    grid-template-columns: 28px 45px 150px 1fr;
+    padding: 2px 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    align-items: center;
+    cursor: default;
+    transition: background-color 0.1s;
+}
+
+.imem-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Columna de Breakpoints interactiva */
+.imem-bp-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.bp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #444444;
+    background-color: transparent;
+    transition: all 0.15s ease;
+}
+
+.imem-bp-col:hover .bp-dot {
+    border-color: #f14c4c;
+    background-color: rgba(241, 76, 76, 0.3);
+}
+
+.bp-dot.active {
+    background-color: #f14c4c;
+    border-color: #f14c4c;
+    box-shadow: 0 0 5px rgba(241, 76, 76, 0.6);
+}
+
+.imem-addr {
+    color: #6e7681;
+    font-size: 0.72rem;
+}
+
+.imem-code {
+    color: #d4d4d4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.imem-opcode {
+    color: #569cd6;
+    font-weight: 600;
+}
+
+.imem-args {
+    color: #b5cea8;
+}
+
+.imem-comment {
+    color: #6a9955;
+    font-style: italic;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Fila activa del PC (Program Counter) */
+.imem-row.active-pc {
+    background-color: #094771;
+    border-left: 2px solid #38bdf8;
+    color: #ffffff;
+}
+
+.imem-row.active-pc .imem-addr::before {
+    content: '▶ ';
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+.imem-row.active-pc .imem-code {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   TABLA DE MEMORIA DE DATOS (DMEM - 1024 CELDAS)
+   ========================================================================== */
+.memory-header.dmem-header {
+    display: grid;
+    grid-template-columns: 65px 85px 85px 1fr;
+    padding: 0.35rem 0.5rem;
+    background-color: #252526;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #888888;
+    border-bottom: 1px solid #2d2d2d;
+    font-family: var(--font-mono);
+    user-select: none;
+}
+
+.dmem-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.dmem-row {
+    display: grid;
+    grid-template-columns: 65px 85px 85px 1fr;
+    padding: 2px 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    align-items: center;
+    cursor: default;
+}
+
+.dmem-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dmem-row.highlight-target {
+    background-color: #264f78;
+    animation: flashRow 1.5s ease-out;
+}
+
+@keyframes flashRow {
+    0% { background-color: #1177bb; }
+    100% { background-color: transparent; }
+}
+
+/* Micro-animación de destello al escribir un dato en celda DMem (lastWrite) */
+.dmem-row.dmem-cell-written {
+    animation: flashDMemWrite 1.2s ease-out;
+}
+
+@keyframes flashDMemWrite {
+    0% {
+        background-color: rgba(78, 201, 176, 0.45);
+        box-shadow: inset 0 0 10px rgba(78, 201, 176, 0.7);
+    }
+    40% {
+        background-color: rgba(78, 201, 176, 0.2);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+.dmem-cell-addr {
+    color: #6e7681;
+    font-size: 0.72rem;
+}
+
+.dmem-cell-dec {
+    color: #4ec9b0;
+}
+
+.dmem-cell-dec.zero {
+    color: #666666;
+}
+
+.dmem-cell-hex {
+    color: #9cdcfe;
+    font-size: 0.72rem;
+}
+
+.dmem-cell-hex.zero {
+    color: #555555;
+}
+
+.dmem-cell-role {
+    font-size: 0.72rem;
+    color: #888888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dmem-cell-role.tag-gp {
+    color: #569cd6;
+}
+
+.dmem-cell-role.tag-mp {
+    color: #e5c07b;
+}
+
+.memory-placeholder, .inspector-placeholder {
+    color: #666666;
+    font-size: 0.78rem;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    font-family: var(--font-ui);
+}

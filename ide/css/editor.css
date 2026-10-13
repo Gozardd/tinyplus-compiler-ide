@@ -1,0 +1,191 @@
+/* ==========================================================================
+   TINY++ STUDIO IDE - ESTILOS DEL EDITOR DE CÓDIGO (VS CODE DARK+)
+   Autor: Henyer Molina (Módulo 4) - UNET 2026
+   ========================================================================== */
+
+/* Cabecera del Editor (Pestañas estilo VS Code) */
+.pane-header {
+    height: 32px;
+    background-color: #252526;
+    border-bottom: 1px solid #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.5rem 0 0;
+}
+
+.tab-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 32px;
+    padding: 0 0.85rem;
+    background-color: var(--bg-editor);
+    border-top: 2px solid #007acc;
+    border-right: 1px solid #1e1e1e;
+    font-size: 0.78rem;
+    font-family: var(--font-ui);
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.pane-controls {
+    display: flex;
+    align-items: center;
+    padding-right: 0.5rem;
+}
+
+.status-indicator-idle {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+}
+
+/* Área del editor de código */
+.editor-container {
+    flex: 1;
+    min-height: 80px;
+    display: flex;
+    background-color: var(--bg-editor);
+    overflow: hidden;
+    position: relative;
+}
+
+.line-numbers {
+    width: 44px;
+    background-color: var(--bg-editor);
+    color: #858585;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 20px;
+    padding: 8px 6px;
+    text-align: right;
+    user-select: none;
+    border-right: 1px solid #282828;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.line-num {
+    height: 20px;
+    display: block;
+    cursor: pointer;
+}
+
+.line-num:hover {
+    color: #c6c6c6;
+}
+
+.line-num.has-error {
+    color: #f14c4c;
+    font-weight: bold;
+    position: relative;
+}
+
+.line-num.has-error::before {
+    content: '●';
+    font-size: 8px;
+    color: #f14c4c;
+    margin-right: 3px;
+}
+
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-editor);
+}
+
+.code-editor,
+.code-highlight-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0;
+    white-space: pre;
+    word-wrap: normal;
+    tab-size: 4;
+    box-sizing: border-box;
+}
+
+.code-editor {
+    z-index: 2;
+    color: transparent;
+    background: transparent;
+    caret-color: #ffffff;
+    border: none;
+    outline: none;
+    resize: none;
+    overflow: auto;
+}
+
+.code-highlight-layer {
+    z-index: 1;
+    pointer-events: none;
+    color: var(--text-primary);
+    background-color: transparent;
+    overflow: hidden;
+}
+
+/* Marcador visual de línea con error */
+.error-line-marker {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: rgba(241, 76, 76, 0.12);
+    border-left: 3px solid #f14c4c;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
+    transition: top 0.15s ease;
+}
+
+.error-line-marker.active {
+    display: block;
+}
+
+/* ==========================================================================
+   COLORES DE RESALTADO SINTÁCTICO TINY++ (TEMA VS CODE DARK+)
+   ========================================================================== */
+.tok-keyword {
+    color: #569cd6; /* Azul de palabras clave (if, then, while, int...) */
+    font-weight: 600;
+}
+
+.tok-type {
+    color: #4ec9b0; /* Verdeazulado para tipos primitivos */
+}
+
+.tok-number {
+    color: #b5cea8; /* Verde claro para literales numéricos */
+}
+
+.tok-string {
+    color: #ce9178; /* Naranja rojizo para cadenas de caracteres */
+}
+
+.tok-comment {
+    color: #6a9955; /* Verde olivo clásico para comentarios { ... } */
+    font-style: italic;
+}
+
+.tok-op {
+    color: #d4d4d4; /* Gris claro para operadores */
+}
+
+.tok-assign {
+    color: #569cd6;
+    font-weight: 600;
+}
+
+.tok-id {
+    color: #9cdcfe; /* Azul cielo de variables/identificadores */
+}

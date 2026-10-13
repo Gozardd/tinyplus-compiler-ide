@@ -1,0 +1,133 @@
+/* ==========================================================================
+   TINY++ STUDIO IDE - ESTILOS DEL ÁRBOL SINTÁCTICO ABSTRACTO (AST)
+   Módulo 4: IDE Visual & Integración - UNET 2026
+   ========================================================================== */
+
+.ast-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #181818;
+}
+
+.ast-toolbar, .inspector-toolbar {
+    height: 32px;
+    background-color: #202021;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.6rem;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+}
+
+.ast-stats, .inspector-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ast-actions, .inspector-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.ast-tree-container {
+    flex: 1;
+    overflow: auto;
+    padding: 0.6rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.55;
+    background-color: #181818;
+    user-select: text;
+}
+
+.ast-node {
+    margin: 1px 0;
+}
+
+.ast-node-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+
+.ast-node-header:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.ast-toggle {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #888888;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    user-select: none;
+}
+
+.ast-toggle.collapsed {
+    transform: rotate(-90deg);
+}
+
+.ast-toggle.leaf {
+    visibility: hidden;
+}
+
+/* Insignias (Badges) semánticas para nodos del AST */
+.ast-badge {
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 2px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.ast-badge-program { background-color: rgba(0, 122, 204, 0.2); color: #4fc1ff; border: 1px solid rgba(0, 122, 204, 0.4); }
+.ast-badge-function { background-color: rgba(187, 102, 238, 0.2); color: #c586c0; border: 1px solid rgba(187, 102, 238, 0.4); }
+.ast-badge-decl { background-color: rgba(78, 201, 176, 0.15); color: #4ec9b0; border: 1px solid rgba(78, 201, 176, 0.3); }
+.ast-badge-stmt { background-color: rgba(220, 220, 170, 0.15); color: #dcdcaa; border: 1px solid rgba(220, 220, 170, 0.3); }
+.ast-badge-op { background-color: rgba(206, 145, 120, 0.2); color: #ce9178; border: 1px solid rgba(206, 145, 120, 0.4); }
+.ast-badge-id { background-color: rgba(156, 220, 254, 0.15); color: #9cdcfe; border: 1px solid rgba(156, 220, 254, 0.3); }
+.ast-badge-const { background-color: rgba(181, 206, 168, 0.2); color: #b5cea8; border: 1px solid rgba(181, 206, 168, 0.4); }
+.ast-badge-io { background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); }
+
+.ast-label {
+    color: #cccccc;
+    font-size: 0.74rem;
+}
+
+.ast-value {
+    color: #4ec9b0;
+    font-weight: 600;
+}
+
+.ast-type-tag {
+    color: #888888;
+    font-size: 0.68rem;
+    font-style: italic;
+}
+
+/* Conectores y guías de sangría del árbol */
+.ast-children {
+    margin-left: 1.1rem;
+    padding-left: 0.4rem;
+    border-left: 1px dashed rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-direction: column;
+}
+
+.ast-children.collapsed {
+    display: none;
+}
