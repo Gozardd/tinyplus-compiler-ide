@@ -459,7 +459,7 @@ const TinyDebuggerUI = {
 
         if (this.status === 'HALTED') {
             if (window.TinyConsole) {
-                window.TinyConsole.info('🏁 La Tiny Machine ya está en estado HALT. Haz clic en "Reset" (↺) para reiniciar.');
+                window.TinyConsole.info('[TM] La Tiny Machine ya está en estado HALT. Haz clic en "Reset" para reiniciar.');
             }
             return false;
         }
@@ -481,7 +481,7 @@ const TinyDebuggerUI = {
             this.pause();
             this.setStatus('PAUSADO (BP)');
             if (window.TinyConsole) {
-                window.TinyConsole.warn(`⏸ Punto de interrupción alcanzado en instrucción [${currentPC}: ${instr.opcode} ${instr.args}].`);
+                window.TinyConsole.warn(`[TM BP] Punto de interrupción alcanzado en instrucción [${currentPC}: ${instr.opcode} ${instr.args}].`);
             }
             this.scrollToPC();
             return false;
@@ -511,7 +511,7 @@ const TinyDebuggerUI = {
                 if (this.runTimer) clearInterval(this.runTimer);
                 this.runTimer = null;
                 if (window.TinyConsole) {
-                    window.TinyConsole.success(`🏁 HALT: Programa TM finalizado con éxito en la dirección ${currentPC}.`);
+                    window.TinyConsole.success(`[TM HALT] Programa TM finalizado con éxito en la dirección ${currentPC}.`);
                 }
                 this.updateControlButtons();
                 break;
@@ -525,14 +525,14 @@ const TinyDebuggerUI = {
                 }
                 this.setRegister(r, inVal);
                 if (window.TinyConsole) {
-                    window.TinyConsole.info(`📥 [TM IN] Entrada leída para r${r}: ${inVal}`);
+                    window.TinyConsole.info(`[TM IN] Entrada leída para r${r}: ${inVal}`);
                 }
                 break;
 
             case 'OUT':
                 const outVal = this.getRegister(r);
                 if (window.TinyConsole) {
-                    window.TinyConsole.success(`📤 [TM OUT] Salida r${r}: ${outVal}`);
+                    window.TinyConsole.success(`[TM OUT] Salida r${r}: ${outVal}`);
                 }
                 break;
 
@@ -554,7 +554,7 @@ const TinyDebuggerUI = {
                     this.setStatus('ERROR (DIV 0)');
                     this.pause();
                     if (window.TinyConsole) {
-                        window.TinyConsole.error(`⛔ Excepción TM: División por cero en instrucción ${currentPC} (${opcode} ${r}, ${s}, ${t}).`);
+                        window.TinyConsole.error(`[TM ERROR] División por cero en instrucción ${currentPC} (${opcode} ${r}, ${s}, ${t}).`);
                     }
                     return false;
                 }
@@ -566,7 +566,7 @@ const TinyDebuggerUI = {
                     this.setStatus('ERROR (DMEM)');
                     this.pause();
                     if (window.TinyConsole) {
-                        window.TinyConsole.error(`⛔ Excepción TM: Lectura en DMem fuera de rango [${m}] en PC = ${currentPC}.`);
+                        window.TinyConsole.error(`[TM ERROR] Lectura en DMem fuera de rango [${m}] en PC = ${currentPC}.`);
                     }
                     return false;
                 }
@@ -578,7 +578,7 @@ const TinyDebuggerUI = {
                     this.setStatus('ERROR (DMEM)');
                     this.pause();
                     if (window.TinyConsole) {
-                        window.TinyConsole.error(`⛔ Excepción TM: Escritura en DMem fuera de rango [${m}] en PC = ${currentPC}.`);
+                        window.TinyConsole.error(`[TM ERROR] Escritura en DMem fuera de rango [${m}] en PC = ${currentPC}.`);
                     }
                     return false;
                 }
@@ -660,7 +660,7 @@ const TinyDebuggerUI = {
 
         if (this.status === 'HALTED') {
             if (window.TinyConsole) {
-                window.TinyConsole.info('El programa ya finalizó (HALT). Haz clic en "Reset" (↺) para reiniciar.');
+                window.TinyConsole.info('[TM] El programa ya finalizó (HALT). Haz clic en "Reset" para reiniciar.');
             }
             return;
         }
@@ -673,7 +673,7 @@ const TinyDebuggerUI = {
         this.updateControlButtons();
 
         if (window.TinyConsole) {
-            window.TinyConsole.info(`▶ Iniciando ejecución continua TM (${this.executionSpeed}ms/paso)...`);
+            window.TinyConsole.info(`[TM RUN] Iniciando ejecución continua (${this.executionSpeed}ms/paso)...`);
         }
 
         this.runTimer = setInterval(() => {
@@ -708,7 +708,7 @@ const TinyDebuggerUI = {
         this.updateControlButtons();
 
         if (wasRunning && window.TinyConsole) {
-            window.TinyConsole.info(`⏸ Ejecución pausada en PC = ${this.registers.pc}.`);
+            window.TinyConsole.info(`[TM PAUSA] Ejecución pausada en PC = ${this.registers.pc}.`);
         }
     },
 
@@ -751,7 +751,7 @@ const TinyDebuggerUI = {
         this.updateControlButtons();
 
         if (window.TinyConsole) {
-            window.TinyConsole.info('↺ Depurador de la Tiny Machine reiniciado: PC=0, registros y memoria restaurados.');
+            window.TinyConsole.info('[TM RESET] Depurador de la Tiny Machine reiniciado: PC=0, registros y memoria restaurados.');
         }
     },
 

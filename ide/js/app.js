@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAboutModal();
 
     // 6. Notificación de arranque
-    window.TinyConsole.system('IDE Tiny++ Studio listo. Compilador y depurador TM preparados (Henyer Molina - UNET 2026).');
+    window.TinyConsole.system('IDE Tiny++ Studio listo. Compilador y depurador TM preparados.');
 
-    console.log('%c[Tiny++ Studio]%c IDE inicializado con éxito (Henyer Molina - UNET 2026)', 
+    console.log('%c[Tiny++ Studio]%c IDE inicializado con éxito', 
         'color: #007acc; font-weight: bold;', 
         'color: #4ec9b0;');
 });
@@ -169,7 +169,7 @@ function setupCompilation() {
 
                 // Saltar y enfocar automáticamente el primer error detectado
                 window.TinyEditor.goToLine(errors[0].line);
-                window.TinyConsole.info('💡 Haz clic en el botón [Línea X] o en la fila de error para saltar a la línea infractora.');
+                window.TinyConsole.info('Haz clic en el botón [Línea X] o en la fila de error para saltar a la línea infractora.');
             } else {
                 if (statusLabel) {
                     statusLabel.textContent = 'Compilado OK';
