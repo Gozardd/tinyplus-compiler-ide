@@ -10,8 +10,8 @@
  */
 
 const TinyEditor = {
-    LINE_HEIGHT: 22,
-    PADDING_TOP: 12,
+    LINE_HEIGHT: 20,
+    PADDING_TOP: 8,
 
     init() {
         this.editor = document.getElementById('code-editor');

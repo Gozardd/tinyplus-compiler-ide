@@ -16,15 +16,14 @@
         <header class="top-navbar" id="top-navbar">
             <div class="brand-group">
                 <div class="brand-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                        <polyline points="2 17 12 22 22 17"></polyline>
-                        <polyline points="2 12 12 17 22 12"></polyline>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
                     </svg>
                 </div>
                 <div class="brand-text">
-                    <span class="brand-title">Tiny++ <span class="accent-text">Studio</span></span>
-                    <span class="brand-badge">UNET 2026</span>
+                    <span class="brand-title">Tiny++ Studio</span>
+                    <span class="brand-subtitle">IDE & Depurador TM</span>
                 </div>
             </div>
 
@@ -43,21 +42,21 @@
 
                 <div class="action-buttons-group">
                     <button id="btn-compile" class="btn btn-primary" title="Compilar código fuente Tiny++">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
                         </svg>
                         <span>Compilar</span>
                     </button>
 
                     <button id="btn-run" class="btn btn-success" title="Ejecutar simulación continua">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                             <polygon points="5 3 19 12 5 21 5 3"></polygon>
                         </svg>
                         <span>Run</span>
                     </button>
 
                     <button id="btn-step" class="btn btn-secondary" title="Avanzar un paso en la Tiny Machine">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="5 4 15 12 5 20 5 4"></polygon>
                             <line x1="19" y1="5" x2="19" y2="19"></line>
                         </svg>
@@ -65,7 +64,7 @@
                     </button>
 
                     <button id="btn-pause" class="btn btn-secondary" title="Pausar ejecución">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                             <rect x="6" y="4" width="4" height="16"></rect>
                             <rect x="14" y="4" width="4" height="16"></rect>
                         </svg>
@@ -73,7 +72,7 @@
                     </button>
 
                     <button id="btn-reset" class="btn btn-warning" title="Reiniciar memoria y registros TM">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
                             <path d="M3 3v5h5"></path>
                         </svg>
@@ -82,10 +81,16 @@
                 </div>
             </div>
 
-            <!-- METADATA INTEGRANTE -->
-            <div class="user-meta">
-                <span class="user-tag">Módulo 4: IDE Visual</span>
-                <span class="user-name">Henyer Molina</span>
+            <!-- BOTÓN ACERCA DE (CRÉDITOS Y EQUIPO) -->
+            <div class="toolbar-right">
+                <button id="btn-about" class="btn-about" title="Acerca del proyecto y equipo UNET">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Acerca de</span>
+                </button>
             </div>
         </header>
 
@@ -225,15 +230,48 @@ write y;
         <!-- BARRA DE ESTADO INFERIOR -->
         <footer class="bottom-statusbar" id="bottom-statusbar">
             <div class="status-left">
-                <span class="status-item"><span class="dot-green"></span> Conectado</span>
+                <span class="status-item"><span class="dot-green"></span> Listo</span>
                 <span class="status-item" id="cursor-pos">Lín: 1, Col: 1</span>
                 <span class="status-item">Tiny++ UTF-8</span>
             </div>
             <div class="status-right">
-                <span class="status-item">Tiny Machine: 1024 dMem | 1024 iMem</span>
-                <span class="status-item">UNET - Compiladores e Intérpretes</span>
+                <span class="status-item">TM: 1024 celdas</span>
+                <span class="status-item">UNET 2026</span>
+                <span class="status-item">Módulo 4: Henyer Molina</span>
             </div>
         </footer>
+    </div>
+
+    <!-- DIÁLOGO MODAL: ACERCA DE -->
+    <div class="modal-overlay" id="modal-about">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <span>Acerca de Tiny++ Studio IDE</span>
+                <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>Compilador Tiny++ & Depurador Visual TM</h4>
+                <p>Proyecto formal desarrollado para la asignatura <strong>Compiladores e Intérpretes</strong> en la Universidad Nacional Experimental del Táchira (UNET).</p>
+                <div class="team-list">
+                    <div class="team-member-row">
+                        <span class="team-member-name">Theryan Colmenares (V-31.060.894)</span>
+                        <span class="team-member-role">Módulo 1: Frontend & Semántica</span>
+                    </div>
+                    <div class="team-member-row">
+                        <span class="team-member-name">Ismael Hidalgo (V-31.470.047)</span>
+                        <span class="team-member-role">Módulo 2: Backend TM</span>
+                    </div>
+                    <div class="team-member-row">
+                        <span class="team-member-name">Santiago Hernández (V-31.098.297)</span>
+                        <span class="team-member-role">Módulo 3: Simulador TM</span>
+                    </div>
+                    <div class="team-member-row">
+                        <span class="team-member-name"><strong>Henyer Molina (V-31.098.304)</strong></span>
+                        <span class="team-member-role">Módulo 4: IDE Visual & Integración</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts modulares desacoplados -->

@@ -16,12 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Conectar botón y atajos de compilación
     setupCompilation();
 
-    // 4. Notificación de arranque
-    window.TinyConsole.system('IDE Tiny++ Studio listo. Motor de resaltado léxico y navegación activa de errores cargados.');
+    // 4. Conectar diálogo modal de información del equipo
+    setupAboutModal();
 
-    console.log('%c[Tiny++ Studio]%c IDE inicializado con éxito (Fase 3 - Henyer Molina)', 
-        'color: #38bdf8; font-weight: bold;', 
-        'color: #10b981;');
+    // 5. Notificación de arranque
+    window.TinyConsole.system('IDE Tiny++ Studio listo. Compilador y depurador TM preparados.');
+
+    console.log('%c[Tiny++ Studio]%c IDE inicializado con éxito (Henyer Molina - UNET 2026)', 
+        'color: #007acc; font-weight: bold;', 
+        'color: #4ec9b0;');
 });
 
 /**
@@ -117,3 +120,31 @@ function setupCompilation() {
         }
     });
 }
+
+/**
+ * Controla la apertura y cierre del diálogo modal Acerca de
+ */
+function setupAboutModal() {
+    const btnAbout = document.getElementById('btn-about');
+    const modal = document.getElementById('modal-about');
+    const btnClose = document.getElementById('modal-close-btn');
+
+    if (!btnAbout || !modal) return;
+
+    btnAbout.addEventListener('click', () => {
+        modal.classList.add('active');
+    });
+
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+}
+

@@ -1,45 +1,49 @@
 /* ==========================================================================
    TINY++ STUDIO IDE - VARIABLES & DESIGN TOKENS
+   Estilo: Industrial / Desktop IDE (Inspirado en VS Code y JetBrains)
    Autor: Henyer Molina (Módulo 4) - UNET 2026
    ========================================================================== */
 
 :root {
-    /* Paleta Principal Dark Mode */
-    --bg-app: #080b11;
-    --bg-surface: #0f1523;
-    --bg-panel: #141c2e;
-    --bg-card: #18233a;
-    --bg-card-hover: #1e2b47;
-    --bg-input: #0c111c;
+    /* Paleta Neutra Desktop IDE (Mates, sin neones) */
+    --bg-app: #181818;               /* Fondo base del workspace */
+    --bg-editor: #1e1e1e;            /* Fondo del editor de código */
+    --bg-surface: #252526;           /* Cabeceras, paneles laterales */
+    --bg-panel: #202021;             /* Paneles de herramientas */
+    --bg-card: #2a2d2e;              /* Cajas de registros y controles */
+    --bg-card-hover: #333739;
+    --bg-input: #313131;             /* Entradas de texto y selects */
+    --bg-statusbar: #007acc;         /* Barra de estado inferior estilo VS Code */
+    --text-statusbar: #ffffff;
 
-    /* Bordes y Líneas divisoras */
-    --border-subtle: #1e2b42;
-    --border-active: #33486d;
-    --border-highlight: #38bdf8;
+    /* Bordes Nítidos Técnicos */
+    --border-subtle: #2d2d2d;
+    --border-contrast: #3c3c3c;
+    --border-active: #007acc;
 
-    /* Acentos de Color */
-    --accent-primary: #38bdf8;       /* Cyan moderno */
-    --accent-primary-hover: #0ea5e9;
-    --accent-success: #10b981;       /* Esmeralda */
-    --accent-success-hover: #059669;
-    --accent-warning: #f59e0b;       /* Ámbar */
-    --accent-danger: #f43f5e;        /* Carmesí */
-    --accent-indigo: #6366f1;
+    /* Acentos de Color Funcionales */
+    --accent-primary: #007acc;       /* Azul clásico de herramientas de desarrollo */
+    --accent-primary-hover: #0e639c;
+    --accent-success: #388a34;       /* Verde técnico para Run */
+    --accent-success-hover: #45a13f;
+    --accent-warning: #cca700;       /* Amarillo ámbar técnico */
+    --accent-danger: #f14c4c;        /* Rojo estándar de compilador */
+    --accent-debug: #895503;
 
-    /* Tipografía y Textos */
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --text-on-accent: #0f172a;
+    /* Textos */
+    --text-primary: #cccccc;
+    --text-secondary: #969696;
+    --text-muted: #6e7681;
+    --text-bright: #ffffff;
 
-    /* Fuentes */
-    --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    /* Tipografía */
+    --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+    --font-mono: 'Consolas', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
-    /* Dimensiones fijas */
-    --header-height: 58px;
-    --footer-height: 28px;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
+    /* Dimensiones y Bordes Compactos (Estilo Desktop) */
+    --header-height: 42px;           /* Altura compacta de barra de herramientas */
+    --footer-height: 24px;           /* Altura compacta de barra de estado */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
 }
