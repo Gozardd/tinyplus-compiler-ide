@@ -109,13 +109,17 @@
 
                 <!-- CONTENEDOR DEL EDITOR DE CÓDIGO -->
                 <div class="editor-container" id="editor-container">
-                    <div class="line-numbers" id="line-numbers">1</div>
-                    <textarea id="code-editor" class="code-editor" spellcheck="false" placeholder="Escribe o carga tu código Tiny++ aquí...">{ Programa de prueba Tiny++ }
+                    <div class="line-numbers" id="line-numbers"></div>
+                    <div class="editor-viewport" id="editor-viewport">
+                        <div class="error-line-marker" id="error-line-marker"></div>
+                        <pre class="code-highlight-layer" id="code-highlight-layer" aria-hidden="true"><code id="code-highlight-content"></code></pre>
+                        <textarea id="code-editor" class="code-editor" spellcheck="false" placeholder="Escribe o carga tu código Tiny++ aquí...">{ Programa de prueba Tiny++ }
 int x, y;
 x := 5;
 y := x * 2;
 write y;
 </textarea>
+                    </div>
                 </div>
 
                 <!-- PANEL INFERIOR: CONSOLA Y MENSAJES -->
@@ -234,6 +238,8 @@ write y;
 
     <!-- Scripts modulares desacoplados -->
     <script src="js/examples.js"></script>
+    <script src="js/highlighter.js"></script>
+    <script src="js/validator.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/console.js"></script>
     <script src="js/debugger-ui.js"></script>

@@ -29,7 +29,7 @@
     color: var(--text-muted);
 }
 
-/* Área del editor */
+/* Área del editor con viewport y capas superpuestas */
 .editor-container {
     flex: 3;
     display: flex;
@@ -40,32 +40,181 @@
 }
 
 .line-numbers {
-    width: 44px;
-    background-color: rgba(12, 17, 28, 0.8);
+    width: 48px;
+    background-color: rgba(12, 17, 28, 0.95);
     color: var(--text-muted);
     font-family: var(--font-mono);
-    font-size: 0.85rem;
-    line-height: 1.6;
-    padding: 0.8rem 0.5rem;
+    font-size: 0.84rem;
+    line-height: 22px;
+    padding: 12px 6px;
     text-align: right;
     user-select: none;
     border-right: 1px solid var(--border-subtle);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.line-num {
+    height: 22px;
+    line-height: 22px;
+    padding-right: 4px;
+    transition: color 0.15s, background-color 0.15s;
+    font-variant-numeric: tabular-nums;
+}
+
+.line-num.error {
+    color: var(--accent-danger);
+    font-weight: 700;
+    position: relative;
+}
+
+.line-num.error::before {
+    content: '●';
+    font-size: 9px;
+    color: var(--accent-danger);
+    margin-right: 4px;
+    animation: errorGlow 1.5s infinite ease-in-out;
+}
+
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-app);
+}
+
+/* Capa de fondo para el marcador visual de error */
+.error-line-marker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 22px;
+    background-color: rgba(244, 63, 94, 0.22);
+    border-left: 4px solid var(--accent-danger);
+    box-shadow: 0 0 14px rgba(244, 63, 94, 0.35);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    display: none;
+    box-sizing: border-box;
+}
+
+.error-line-marker.active {
+    display: block;
+    opacity: 1;
+    animation: errorPulse 2s infinite ease-in-out;
+}
+
+/* Capa de resaltado de sintaxis y textarea sincronizados */
+.code-highlight-layer,
+.code-editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 22px;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    letter-spacing: normal;
+    box-sizing: border-box;
+    white-space: pre;
+    word-wrap: normal;
+    border: none;
+    outline: none;
+}
+
+.code-highlight-layer {
+    pointer-events: none;
+    overflow: hidden;
+    background: transparent;
+    z-index: 2;
+    color: #f1f5f9;
+}
+
+.code-highlight-layer code {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    tab-size: inherit;
 }
 
 .code-editor {
-    flex: 1;
     background: transparent;
-    border: none;
-    outline: none;
-    color: #e2e8f0;
-    font-family: var(--font-mono);
-    font-size: 0.88rem;
-    line-height: 1.6;
-    padding: 0.8rem;
-    resize: none;
-    white-space: pre;
+    color: transparent;
+    caret-color: var(--accent-primary);
     overflow: auto;
-    tab-size: 4;
+    resize: none;
+    z-index: 3;
+}
+
+.code-editor::selection {
+    background: rgba(56, 189, 248, 0.28);
+    color: transparent;
+}
+
+/* ==========================================================================
+   PALETA DE RESALTADO DE SINTAXIS TINY++ (DARK MODE PREMIUM)
+   ========================================================================== */
+.tok-comment {
+    color: #64748b;
+    font-style: italic;
+}
+
+.tok-string {
+    color: #34d399; /* Esmeralda */
+}
+
+.tok-type {
+    color: #38bdf8; /* Cyan */
+    font-weight: 600;
+}
+
+.tok-bool {
+    color: #fbbf24; /* Ámbar */
+    font-weight: 600;
+}
+
+.tok-kw {
+    color: #f43f5e; /* Carmesí */
+    font-weight: 600;
+}
+
+.tok-num {
+    color: #fb923c; /* Naranja */
+}
+
+.tok-op {
+    color: #a78bfa; /* Violeta suave */
+    font-weight: 500;
+}
+
+.tok-punct {
+    color: #94a3b8; /* Gris tenue */
+}
+
+.tok-id {
+    color: #f8fafc; /* Blanco perla */
+}
+
+@keyframes errorPulse {
+    0%, 100% {
+        background-color: rgba(244, 63, 94, 0.18);
+        box-shadow: 0 0 10px rgba(244, 63, 94, 0.25);
+    }
+    50% {
+        background-color: rgba(244, 63, 94, 0.35);
+        box-shadow: 0 0 20px rgba(244, 63, 94, 0.55);
+    }
+}
+
+@keyframes errorGlow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }
 
 /* Consola inferior */
@@ -177,9 +326,54 @@
 .error-msg {
     color: #fca5a5;
     background-color: rgba(244, 63, 94, 0.08);
-    padding: 2px 4px;
+    padding: 3px 6px;
     border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 .error-msg .console-tag {
     color: var(--accent-danger);
 }
+
+.error-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Botón interactivo de salto al error */
+.error-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: rgba(244, 63, 94, 0.16);
+    color: #fda4af;
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    border-radius: var(--radius-sm);
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.error-nav-btn:hover {
+    background-color: var(--accent-danger);
+    color: #ffffff;
+    border-color: var(--accent-danger);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(244, 63, 94, 0.4);
+}
+
+.error-nav-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.error-nav-btn:hover svg {
+    transform: translateX(2px);
+}
+
