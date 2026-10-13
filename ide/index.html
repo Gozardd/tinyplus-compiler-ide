@@ -330,7 +330,21 @@ write y;
                     La Tiny Machine requiere un valor entero de entrada para el registro <strong id="io-modal-reg-label">r0 (AC)</strong> en la dirección <strong id="io-modal-pc-label">PC = 2</strong>:
                 </p>
                 <div class="io-input-wrapper">
-                    <input type="number" id="io-modal-input-val" class="io-input-field" placeholder="Ingresa un valor entero (ej: 5)" autofocus />
+                    <div class="io-number-box">
+                        <input type="number" id="io-modal-input-val" class="io-input-field" placeholder="Ingresa un valor entero (ej: 5)" autofocus />
+                        <div class="io-spinners">
+                            <button type="button" class="io-spin-btn io-spin-up" id="btn-io-inc" title="Incrementar (+1)" tabindex="-1">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button" class="io-spin-btn io-spin-down" id="btn-io-dec" title="Decrementar (-1)" tabindex="-1">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="io-modal-actions">
                     <button id="btn-io-modal-submit" class="btn btn-primary">Ingresar Valor (Enter)</button>

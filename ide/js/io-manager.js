@@ -57,6 +57,32 @@ const TinyIO = {
         if (btnCancel) btnCancel.addEventListener('click', handleCancel);
         if (btnClose) btnClose.addEventListener('click', handleCancel);
 
+        const btnInc = document.getElementById('btn-io-inc');
+        const btnDec = document.getElementById('btn-io-dec');
+
+        const stepValue = (delta) => {
+            if (!inputVal) return;
+            const current = parseInt(inputVal.value, 10);
+            const base = isNaN(current) ? 0 : current;
+            inputVal.value = base + delta;
+            inputVal.focus();
+            inputVal.select();
+        };
+
+        if (btnInc) {
+            btnInc.addEventListener('click', (e) => {
+                e.preventDefault();
+                stepValue(1);
+            });
+        }
+
+        if (btnDec) {
+            btnDec.addEventListener('click', (e) => {
+                e.preventDefault();
+                stepValue(-1);
+            });
+        }
+
         if (inputVal) {
             inputVal.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
