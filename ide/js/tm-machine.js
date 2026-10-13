@@ -125,10 +125,27 @@ const TinyMachine = {
     },
 
     loadInstructions(instructions = []) {
-        this.iMem = instructions.map(i => ({
-            ...i,
-            addr: i.addr !== undefined ? i.addr : i.loc
-        }));
+        if (instructions.length > 0 && typeof instructions[0] === 'string') {
+            this.iMem = instructions.map(raw => {
+                const trimmed = raw.trim();
+                const match = trimmed.match(/^(\d+):\s*([A-Za-z]+)\s+([^*]+)(?:\*\s*(.*))?$/);
+                if (match) {
+                    return {
+                        addr: parseInt(match[1], 10),
+                        opcode: match[2].trim().toUpperCase(),
+                        args: match[3].trim(),
+                        comment: match[4] ? match[4].trim() : '',
+                        raw: trimmed
+                    };
+                }
+                return { addr: 0, opcode: '', args: '', comment: '', raw: trimmed };
+            });
+        } else {
+            this.iMem = instructions.map(i => ({
+                ...i,
+                addr: i.addr !== undefined ? i.addr : i.loc
+            }));
+        }
 
         if (this.simulator) {
             const lines = this.iMem.map(i => `${i.addr}: ${i.opcode} ${i.args} * ${i.comment || ''}`).join('\n');
