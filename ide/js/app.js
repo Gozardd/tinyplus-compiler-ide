@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.TinyEditor.init();
     window.TinyConsole.init();
     window.TinyDebuggerUI.init();
+    window.TinyDebuggerUI.loadSampleProgram('factorial');
 
     // 2. Conectar selector de ejemplos precargados
     setupExampleSelector();
@@ -58,6 +59,11 @@ function setupExampleSelector() {
             // Registrar en consola
             window.TinyConsole.info(`Ejemplo cargado: "${example.title}" (${example.filename})`);
 
+            // Cargar programa TM si no es el ejemplo de error
+            if (selectedKey !== 'error' && window.TinyDebuggerUI) {
+                window.TinyDebuggerUI.loadSampleProgram(selectedKey);
+            }
+
             // Si se cargó el ejemplo de error, ofrecer sugerencia al usuario
             if (selectedKey === 'error') {
                 window.TinyConsole.warn('Pulsa el botón "Compilar" para ver la detección semántica y navegación de errores en acción.');
@@ -104,6 +110,14 @@ function setupCompilation() {
                 }
 
                 window.TinyConsole.success('Compilación exitosa: 0 errores léxicos, sintácticos o semánticos. Código objeto TM generado.');
+
+                // Cargar código objeto en la memoria de la Tiny Machine
+                const selector = document.getElementById('example-selector');
+                const selectedKey = selector ? selector.value : 'factorial';
+                if (window.TinyDebuggerUI) {
+                    window.TinyDebuggerUI.loadSampleProgram(selectedKey || 'factorial');
+                    window.TinyConsole.info('Instrucciones ensamblador cargadas en IMem. Depurador TM listo.');
+                }
             }
         }
     };

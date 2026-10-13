@@ -154,24 +154,24 @@ write y;
                         <span class="tm-status-pill" id="tm-status">STANDBY</span>
                     </div>
                     <div class="registers-grid">
-                        <div class="reg-box" id="reg-pc">
-                            <span class="reg-label">PC (0)</span>
+                        <div class="reg-box" id="reg-pc" title="Registro 7: Contador de Programa (PC) - Dirección de la próxima instrucción">
+                            <span class="reg-label">PC (r7)</span>
                             <span class="reg-value" id="val-pc">0</span>
                         </div>
-                        <div class="reg-box" id="reg-gp">
-                            <span class="reg-label">GP (5)</span>
+                        <div class="reg-box" id="reg-gp" title="Registro 5: Puntero Global (GP) - Base de variables estáticas y globales">
+                            <span class="reg-label">GP (r5)</span>
                             <span class="reg-value" id="val-gp">0</span>
                         </div>
-                        <div class="reg-box" id="reg-mp">
-                            <span class="reg-label">MP (6)</span>
+                        <div class="reg-box" id="reg-mp" title="Registro 6: Puntero de Memoria / Marco de Pila (MP) - Marco de activación">
+                            <span class="reg-label">MP (r6)</span>
                             <span class="reg-value" id="val-mp">1023</span>
                         </div>
-                        <div class="reg-box" id="reg-ac">
-                            <span class="reg-label">AC (0)</span>
+                        <div class="reg-box" id="reg-ac" title="Registro 0: Acumulador Principal (AC) - Resultados y retornos">
+                            <span class="reg-label">AC (r0)</span>
                             <span class="reg-value" id="val-ac">0</span>
                         </div>
-                        <div class="reg-box" id="reg-ac1">
-                            <span class="reg-label">AC1 (1)</span>
+                        <div class="reg-box" id="reg-ac1" title="Registro 1: Acumulador Secundario (AC1) - Segundo operando temporal">
+                            <span class="reg-label">AC1 (r1)</span>
                             <span class="reg-value" id="val-ac1">0</span>
                         </div>
                     </div>
@@ -187,24 +187,53 @@ write y;
                     </div>
 
                     <div class="inspector-content">
-                        <!-- TAB 1: IMEM -->
+                        <!-- TAB 1: IMEM (MEMORIA DE INSTRUCCIONES) -->
                         <div class="tab-pane active" id="tab-imem">
-                            <div class="memory-header">
-                                <span>Dir</span>
-                                <span>Instrucción TM</span>
-                                <span>Comentario</span>
+                            <div class="imem-toolbar">
+                                <div class="imem-stats">
+                                    <span class="stat-badge" id="imem-count">0 instrs</span>
+                                    <span class="stat-badge stat-bp" id="imem-bp-count">0 BPs</span>
+                                </div>
+                                <div class="imem-actions">
+                                    <button id="btn-imem-topc" class="btn-micro" title="Desplazar la vista hasta la instrucción actual del PC">Ir al PC</button>
+                                    <button id="btn-imem-clearbp" class="btn-micro" title="Remover todos los puntos de interrupción">Limpiar BPs</button>
+                                </div>
                             </div>
-                            <div class="memory-list" id="imem-list">
+                            <div class="memory-header imem-header">
+                                <span class="col-bp" title="Puntos de interrupción">BP</span>
+                                <span class="col-dir">Dir</span>
+                                <span class="col-code">Instrucción TM</span>
+                                <span class="col-comment">Comentario</span>
+                            </div>
+                            <div class="memory-list imem-list" id="imem-list">
                                 <div class="memory-placeholder">No se ha cargado ningún programa objeto TM todavía. Pulsa "Compilar".</div>
                             </div>
                         </div>
 
-                        <!-- TAB 2: DMEM -->
+                        <!-- TAB 2: DMEM (MEMORIA DE DATOS - 1024 CELDAS) -->
                         <div class="tab-pane" id="tab-dmem">
                             <div class="dmem-toolbar">
-                                <span class="dmem-subtitle">Espacio de Memoria de Datos (1024 celdas)</span>
+                                <div class="dmem-view-group">
+                                    <label for="dmem-view-mode" class="dmem-label">Vista:</label>
+                                    <select id="dmem-view-mode" class="select-input select-micro">
+                                        <option value="gp" selected>Variables Globales (GP: 0..)</option>
+                                        <option value="mp">Pila de Ejecución (MP: 1023..)</option>
+                                        <option value="active">Celdas con Valor (≠ 0)</option>
+                                        <option value="all">Todas las Celdas (0..1023)</option>
+                                    </select>
+                                </div>
+                                <div class="dmem-jump-group">
+                                    <input type="number" id="dmem-jump-input" placeholder="Celda #" min="0" max="1023" class="input-micro">
+                                    <button id="btn-dmem-jump" class="btn-micro" title="Saltar a la celda de memoria">Ir</button>
+                                </div>
                             </div>
-                            <div class="memory-list" id="dmem-list">
+                            <div class="memory-header dmem-header">
+                                <span class="col-dmem-dir">Dirección</span>
+                                <span class="col-dmem-dec">Valor (Dec)</span>
+                                <span class="col-dmem-hex">Valor (Hex)</span>
+                                <span class="col-dmem-role">Ámbito / Rol</span>
+                            </div>
+                            <div class="memory-list dmem-list" id="dmem-list">
                                 <div class="memory-placeholder">Memoria de datos vacía o en estado inicial.</div>
                             </div>
                         </div>
