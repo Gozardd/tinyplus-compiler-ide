@@ -8,4 +8,6 @@
 @import 'editor.css';
 @import 'console.css';
 @import 'debugger.css';
+@import 'ast.css';
+@import 'symbols.css';
 @import 'modals.css';

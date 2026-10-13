@@ -281,15 +281,49 @@ write y;
 
                         <!-- TAB 3: AST -->
                         <div class="tab-pane" id="tab-ast">
-                            <div class="inspector-placeholder" id="ast-viewer">
-                                Compila un programa para inspeccionar la estructura sintáctica generada.
+                            <div class="ast-container">
+                                <div class="inspector-toolbar">
+                                    <div class="inspector-stats">
+                                        <span class="stat-badge" id="ast-node-count">0 nodos</span>
+                                        <span class="stat-badge stat-bp" id="ast-program-badge">Tiny++ AST</span>
+                                    </div>
+                                    <div class="inspector-actions">
+                                        <button id="btn-ast-expand" class="btn-micro" title="Expandir todos los nodos del árbol">Expandir Todo</button>
+                                        <button id="btn-ast-collapse" class="btn-micro" title="Colapsar todos los nodos del árbol">Colapsar Todo</button>
+                                    </div>
+                                </div>
+                                <div class="ast-tree-container" id="ast-tree-root">
+                                    <div class="inspector-placeholder">Cargando árbol sintáctico AST...</div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- TAB 4: TABLA DE SÍMBOLOS -->
                         <div class="tab-pane" id="tab-symbols">
-                            <div class="inspector-placeholder" id="symbols-viewer">
-                                Compila un programa para inspeccionar los ámbitos y variables declaradas.
+                            <div class="symbols-container">
+                                <div class="inspector-toolbar">
+                                    <div class="inspector-stats">
+                                        <span class="stat-badge" id="symbols-count">0 símbolos</span>
+                                        <label for="symbols-scope-filter" class="sr-only">Ámbito</label>
+                                        <select id="symbols-scope-filter" class="select-micro" title="Filtrar por ámbito de declaración">
+                                            <option value="all">Todos los ámbitos</option>
+                                        </select>
+                                    </div>
+                                    <div class="inspector-actions">
+                                        <label for="symbols-search-input" class="sr-only">Buscar símbolo</label>
+                                        <input type="text" id="symbols-search-input" placeholder="Buscar símbolo..." class="input-micro" style="width: 110px;">
+                                    </div>
+                                </div>
+                                <div class="symbols-table-header">
+                                    <span>Identificador</span>
+                                    <span>Tipo</span>
+                                    <span>Ámbito</span>
+                                    <span>Offset TM</span>
+                                    <span>Línea</span>
+                                </div>
+                                <div class="symbols-list" id="symbols-list">
+                                    <div class="inspector-placeholder">Cargando tabla de símbolos...</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -397,6 +431,10 @@ write y;
     <script src="js/io-manager.js"></script>
     <script src="js/tm-machine.js"></script>
     <script src="js/debugger-ui.js"></script>
+    <script src="js/inspector-presets.js"></script>
+    <script src="js/ast-viewer.js"></script>
+    <script src="js/symbols-viewer.js"></script>
+    <script src="js/inspector.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

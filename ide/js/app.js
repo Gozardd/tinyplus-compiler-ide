@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.TinyResizer) window.TinyResizer.init();
     window.TinyDebuggerUI.init();
     window.TinyDebuggerUI.loadSampleProgram('factorial');
+    if (window.TinyInspector) window.TinyInspector.init();
 
     // 2. Conectar selector de ejemplos precargados
     setupExampleSelector();
@@ -132,6 +133,11 @@ function setupExampleSelector() {
                 window.TinyDebuggerUI.loadSampleProgram(selectedKey);
             }
 
+            // Actualizar árbol AST y tabla de símbolos en el inspector
+            if (window.TinyInspector) {
+                window.TinyInspector.updateFromSource(example.code, selectedKey);
+            }
+
             // Si se cargó el ejemplo de error, ofrecer sugerencia al usuario
             if (selectedKey === 'error') {
                 window.TinyConsole.warn('Pulsa el botón "Compilar" para ver la detección semántica y navegación de errores en acción.');
@@ -185,6 +191,11 @@ function setupCompilation() {
                 if (window.TinyDebuggerUI) {
                     window.TinyDebuggerUI.loadSampleProgram(selectedKey || 'factorial');
                     window.TinyConsole.info('Instrucciones ensamblador cargadas en IMem. Depurador TM listo.');
+                }
+
+                // Actualizar árbol AST y tabla de símbolos con el código compilado
+                if (window.TinyInspector) {
+                    window.TinyInspector.updateFromSource(code, selectedKey);
                 }
             }
         }
