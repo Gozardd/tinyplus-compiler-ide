@@ -201,6 +201,12 @@ write y;
                                     <span class="stat-badge stat-bp" id="imem-bp-count">0 BPs</span>
                                 </div>
                                 <div class="imem-actions">
+                                    <label for="tm-speed-selector" class="sr-only">Velocidad</label>
+                                    <select id="tm-speed-selector" class="select-micro" title="Velocidad de ejecución en modo Run">
+                                        <option value="450">0.5x</option>
+                                        <option value="200" selected>1x</option>
+                                        <option value="60">3x</option>
+                                    </select>
                                     <button id="btn-imem-topc" class="btn-micro" title="Desplazar la vista hasta la instrucción actual del PC">Ir al PC</button>
                                     <button id="btn-imem-clearbp" class="btn-micro" title="Remover todos los puntos de interrupción">Limpiar BPs</button>
                                 </div>

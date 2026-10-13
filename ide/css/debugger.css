@@ -34,6 +34,44 @@
     background: #333333;
     color: #cccccc;
     border: 1px solid #444444;
+    transition: all 0.2s ease;
+}
+
+.tm-status-pill.status-ready {
+    background: rgba(78, 201, 176, 0.15);
+    color: #4ec9b0;
+    border-color: rgba(78, 201, 176, 0.4);
+}
+
+.tm-status-pill.status-running {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.5);
+    animation: pulseStatus 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseStatus {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; border-color: #38bdf8; }
+    100% { opacity: 0.8; }
+}
+
+.tm-status-pill.status-paused {
+    background: rgba(229, 192, 123, 0.2);
+    color: #e5c07b;
+    border-color: rgba(229, 192, 123, 0.5);
+}
+
+.tm-status-pill.status-halted {
+    background: rgba(142, 142, 142, 0.2);
+    color: #cccccc;
+    border-color: #666666;
+}
+
+.tm-status-pill.status-error {
+    background: rgba(241, 76, 76, 0.2);
+    color: #f14c4c;
+    border-color: rgba(241, 76, 76, 0.5);
 }
 
 .registers-grid {
@@ -60,8 +98,20 @@
 
 /* Destello sutil cuando un registro cambia de valor */
 .reg-box.reg-changed {
-    background-color: rgba(204, 167, 0, 0.25);
-    border-color: #cca700;
+    animation: flashReg 0.7s ease-out;
+}
+
+@keyframes flashReg {
+    0% {
+        background-color: rgba(229, 192, 123, 0.45);
+        border-color: #cca700;
+        transform: translateY(-1px);
+    }
+    100% {
+        background-color: #1e1e1e;
+        border-color: #2d2d2d;
+        transform: translateY(0);
+    }
 }
 
 .reg-label {
@@ -396,6 +446,25 @@
 @keyframes flashRow {
     0% { background-color: #1177bb; }
     100% { background-color: transparent; }
+}
+
+/* Micro-animación de destello al escribir un dato en celda DMem (lastWrite) */
+.dmem-row.dmem-cell-written {
+    animation: flashDMemWrite 1.2s ease-out;
+}
+
+@keyframes flashDMemWrite {
+    0% {
+        background-color: rgba(78, 201, 176, 0.45);
+        box-shadow: inset 0 0 10px rgba(78, 201, 176, 0.7);
+    }
+    40% {
+        background-color: rgba(78, 201, 176, 0.2);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+    }
 }
 
 .dmem-cell-addr {

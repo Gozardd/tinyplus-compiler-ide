@@ -15,19 +15,86 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Conectar selector de ejemplos precargados
     setupExampleSelector();
 
-    // 3. Conectar botón y atajos de compilación
+    // 3. Conectar controles de ejecución del depurador (Fase 5)
+    setupExecutionControls();
+
+    // 4. Conectar botón y atajos de compilación
     setupCompilation();
 
-    // 4. Conectar diálogo modal de información del equipo
+    // 5. Conectar diálogo modal de información del equipo
     setupAboutModal();
 
-    // 5. Notificación de arranque
-    window.TinyConsole.system('IDE Tiny++ Studio listo. Compilador y depurador TM preparados.');
+    // 6. Notificación de arranque
+    window.TinyConsole.system('IDE Tiny++ Studio listo. Compilador y depurador TM preparados (Henyer Molina - UNET 2026).');
 
     console.log('%c[Tiny++ Studio]%c IDE inicializado con éxito (Henyer Molina - UNET 2026)', 
         'color: #007acc; font-weight: bold;', 
         'color: #4ec9b0;');
 });
+
+/**
+ * Conecta los botones de la barra de control del depurador (Run, Step, Pausa, Reset)
+ * y los atajos de teclado estándar de depuración (F5, F10, Shift+F5)
+ */
+function setupExecutionControls() {
+    const btnRun = document.getElementById('btn-run');
+    const btnStep = document.getElementById('btn-step');
+    const btnPause = document.getElementById('btn-pause');
+    const btnReset = document.getElementById('btn-reset');
+
+    if (btnRun) {
+        btnRun.addEventListener('click', () => {
+            if (window.TinyDebuggerUI) window.TinyDebuggerUI.run();
+        });
+    }
+
+    if (btnStep) {
+        btnStep.addEventListener('click', () => {
+            if (window.TinyDebuggerUI) window.TinyDebuggerUI.step();
+        });
+    }
+
+    if (btnPause) {
+        btnPause.addEventListener('click', () => {
+            if (window.TinyDebuggerUI) window.TinyDebuggerUI.pause();
+        });
+    }
+
+    if (btnReset) {
+        btnReset.addEventListener('click', () => {
+            if (window.TinyDebuggerUI) window.TinyDebuggerUI.reset();
+        });
+    }
+
+    // Atajos de teclado para depuración ágil
+    document.addEventListener('keydown', (e) => {
+        // F5: Iniciar o Pausar ejecución continua (Run / Pause)
+        if (e.key === 'F5' && !e.shiftKey && !e.ctrlKey) {
+            e.preventDefault();
+            if (window.TinyDebuggerUI) {
+                if (window.TinyDebuggerUI.isRunning) {
+                    window.TinyDebuggerUI.pause();
+                } else {
+                    window.TinyDebuggerUI.run();
+                }
+            }
+        }
+        // Shift + F5: Reiniciar depurador (Reset)
+        else if (e.key === 'F5' && e.shiftKey) {
+            e.preventDefault();
+            if (window.TinyDebuggerUI) {
+                window.TinyDebuggerUI.reset();
+            }
+        }
+        // F10: Avanzar un paso (Step)
+        else if (e.key === 'F10') {
+            e.preventDefault();
+            if (window.TinyDebuggerUI) {
+                window.TinyDebuggerUI.step();
+            }
+        }
+    });
+}
 
 /**
  * Conecta el menú desplegable de ejemplos con el editor y la consola
@@ -162,4 +229,3 @@ function setupAboutModal() {
         }
     });
 }
-
