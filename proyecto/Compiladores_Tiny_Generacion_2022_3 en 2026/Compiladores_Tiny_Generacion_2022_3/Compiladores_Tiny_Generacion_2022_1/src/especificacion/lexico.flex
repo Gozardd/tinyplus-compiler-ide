@@ -26,11 +26,11 @@ import java.io.Reader;
 /******************************************************************
 BORRAR SI NO SE NECESITA
 	//TODO: Cambiar la SF por esto o ver que se hace
-	//Crear un nuevo objeto java_cup.runtime.Symbol con información sobre el token actual sin valor
+	//Crear un nuevo objeto java_cup.runtime.Symbol con informaciï¿½n sobre el token actual sin valor
  	  private Symbol symbol(int type){
     		return new Symbol(type,yyline,yycolumn);
 	  }
-	//Crear un nuevo objeto java_cup.runtime.Symbol con información sobre el token actual con valor
+	//Crear un nuevo objeto java_cup.runtime.Symbol con informaciï¿½n sobre el token actual con valor
 	  private Symbol symbol(int type,Object value){
     		return new Symbol(type,yyline,yycolumn,value);
 	  }
@@ -52,6 +52,7 @@ letra			= [a-zA-Z]
 identificador	= {letra}+
 nuevalinea		= \n | \n\r | \r\n
 espacio		= [ \t]+
+cadena		= \"([^\"\\]|\\.)*\"
 %%
 "if"            {	if(debug) System.out.println("token IF");
 			return sf.newSymbol("IF",sym.IF);
@@ -76,6 +77,30 @@ espacio		= [ \t]+
 			}
 "write"         {	if(debug) System.out.println("token WRITE");
 			return sf.newSymbol("WRITE",sym.WRITE);
+			}
+"int"           {	if(debug) System.out.println("token INT");
+			return sf.newSymbol("INT",sym.INT);
+			}
+"bool"          {	if(debug) System.out.println("token BOOL");
+			return sf.newSymbol("BOOL",sym.BOOL);
+			}
+"string"        {	if(debug) System.out.println("token STRING_T");
+			return sf.newSymbol("STRING_T",sym.STRING_T);
+			}
+"true"          {	if(debug) System.out.println("token TRUE");
+			return sf.newSymbol("TRUE",sym.TRUE);
+			}
+"false"         {	if(debug) System.out.println("token FALSE");
+			return sf.newSymbol("FALSE",sym.FALSE);
+			}
+"procedure"     {	if(debug) System.out.println("token PROCEDURE");
+			return sf.newSymbol("PROCEDURE",sym.PROCEDURE);
+			}
+"function"      {	if(debug) System.out.println("token FUNCTION");
+			return sf.newSymbol("FUNCTION",sym.FUNCTION);
+			}
+"return"        {	if(debug) System.out.println("token RETURN");
+			return sf.newSymbol("RETURN",sym.RETURN);
 			}
 ":="            {	if(debug) System.out.println("token ASSIGN");
 			return sf.newSymbol("ASSIGN",sym.ASSIGN);
@@ -107,8 +132,24 @@ espacio		= [ \t]+
 ";"             {	if(debug) System.out.println("token SEMI");
 			return sf.newSymbol("SEMI",sym.SEMI);
 			}
+"["             {	if(debug) System.out.println("token LBRACKET");
+			return sf.newSymbol("LBRACKET",sym.LBRACKET);
+			}
+"]"             {	if(debug) System.out.println("token RBRACKET");
+			return sf.newSymbol("RBRACKET",sym.RBRACKET);
+			}
+","             {	if(debug) System.out.println("token COMMA");
+			return sf.newSymbol("COMMA",sym.COMMA);
+			}
+":"             {	if(debug) System.out.println("token COLON");
+			return sf.newSymbol("COLON",sym.COLON);
+			}
 {numero}        {	if(debug) System.out.println("token NUM");
 			return sf.newSymbol("NUM",sym.NUM,new String(yytext()));
+			}
+{cadena}        {	if(debug) System.out.println("token STRING_LITERAL");
+			String lexema = yytext();
+			return sf.newSymbol("STRING_LITERAL",sym.STRING_LITERAL,lexema.substring(1,lexema.length()-1));
 			}
 {identificador}	{	if(debug) System.out.println("token ID");
 				return sf.newSymbol("ID",sym.ID,new String(yytext()));
