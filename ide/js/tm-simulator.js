@@ -729,7 +729,8 @@
          * @returns {Promise<string>} Promesa que resuelve al detenerse (HALTED, BREAKPOINT, etc.)
          */
         run(options = {}) {
-            const { delayMs = 0, maxSteps = 1000000 } = options;
+            const delayMs = options.delayMs !== undefined ? options.delayMs : (options.delay !== undefined ? options.delay : 0);
+            const maxSteps = options.maxSteps || 1000000;
 
             if (this.status === STATUS.HALTED || !this.programLoaded) {
                 return Promise.resolve(this.status);

@@ -10,7 +10,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const TMSimulator = require('../simulator/tm-simulator.js');
+const TMSimulator = require('../ide/js/tm-simulator.js');
 
 let passedTests = 0;
 let failedTests = 0;
