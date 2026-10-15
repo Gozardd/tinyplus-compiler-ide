@@ -1,0 +1,11 @@
+int A[5];
+int i;
+int acum;
+i := 0;
+repeat
+  A[i] := (i + 1) * 10;
+  i := i + 1
+until i = 5;
+acum := A[0] + A[1] + A[2] + A[3] + A[4];
+write acum;
+write A[3]

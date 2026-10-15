@@ -70,6 +70,7 @@ public class Generador {
 
 	// Despacha la generacion de un nodo individual SIN seguir a sus hermanos
 	private static void generarNodo(NodoBase nodo){
+		if(nodo == null) return;
 		if(tablaSimbolos == null){
 			System.out.println("ERROR: por favor fije la tabla de simbolos a usar antes de generar codigo objeto!!!");
 			return;
@@ -91,6 +92,8 @@ public class Generador {
 			generarBooleano(nodo);
 		}else if (nodo instanceof NodoIdentificador){
 			generarIdentificador(nodo);
+		}else if (nodo instanceof NodoArreglo){
+			generarArreglo(nodo);
 		}else if (nodo instanceof NodoOperacion){
 			generarOperacion(nodo);
 		}else if (nodo instanceof NodoDeclaracion){
@@ -168,10 +171,27 @@ public class Generador {
 	private static void generarAsignacion(NodoBase nodo){
 		NodoAsignacion n = (NodoAsignacion)nodo;
 		if(UtGen.debug) UtGen.emitirComentario("-> asignacion");		
-		/* Genero el codigo para la expresion a la derecha de la asignacion */
-		generarNodo(n.getExpresion());
-		/* Ahora almaceno el valor resultante */
-		emitirGuardaVar(n.getIdentificador(), "asignacion: almaceno el valor para el id " + n.getIdentificador());
+		if (n.esArreglo()) {
+			/* Asignacion a elemento de arreglo: id[indice] := expr */
+			/* 1. Evaluar la expresion RHS (queda en AC) */
+			generarNodo(n.getExpresion());
+			/* 2. Guardar el valor RHS en la pseudo pila temporal */
+			UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "asig arreglo: push RHS en pila tmp");
+			/* 3. Evaluar la expresion del indice (queda en AC) */
+			generarNodo(n.getIndiceArreglo());
+			/* 4. Calcular direccion efectiva en reg[2] = index (AC) + GP */
+			UtGen.emitirRO("ADD", 2, UtGen.AC, UtGen.GP, "asig arreglo: reg[2] = index + GP");
+			/* 5. Restaurar valor RHS de la pseudo pila a AC */
+			UtGen.emitirRM("LD", UtGen.AC, ++desplazamientoTmp, UtGen.MP, "asig arreglo: pop RHS de pila tmp a AC");
+			/* 6. Almacenar el valor en dMem[dirBase + reg[2]] */
+			int dirBase = tablaSimbolos.getDireccion(n.getIdentificador());
+			UtGen.emitirRM("ST", UtGen.AC, dirBase, 2, "asig arreglo: dMem[" + dirBase + " + reg[2]] = reg[AC]");
+		} else {
+			/* Genero el codigo para la expresion a la derecha de la asignacion */
+			generarNodo(n.getExpresion());
+			/* Ahora almaceno el valor resultante */
+			emitirGuardaVar(n.getIdentificador(), "asignacion: almaceno el valor para el id " + n.getIdentificador());
+		}
 		if(UtGen.debug) UtGen.emitirComentario("<- asignacion");
 	}
 	
@@ -213,6 +233,19 @@ public class Generador {
 		if(UtGen.debug) UtGen.emitirComentario("-> identificador");
 		emitirCargaVar(n.getNombre(), "cargar valor de identificador: " + n.getNombre());
 		if(UtGen.debug) UtGen.emitirComentario("<- identificador");
+	}
+
+	private static void generarArreglo(NodoBase nodo){
+		NodoArreglo n = (NodoArreglo)nodo;
+		if(UtGen.debug) UtGen.emitirComentario("-> arreglo: " + n.getNombre());
+		/* Evaluar la expresion del indice (queda en AC) */
+		generarNodo(n.getIndice());
+		/* Calcular direccion efectiva en reg[2] = index (AC) + GP */
+		UtGen.emitirRO("ADD", 2, UtGen.AC, UtGen.GP, "arreglo: reg[2] = index + GP");
+		/* Cargar valor desde dMem[dirBase + reg[2]] en AC */
+		int dirBase = tablaSimbolos.getDireccion(n.getNombre());
+		UtGen.emitirRM("LD", UtGen.AC, dirBase, 2, "arreglo: cargar dMem[" + dirBase + " + reg[2]] en AC");
+		if(UtGen.debug) UtGen.emitirComentario("<- arreglo: " + n.getNombre());
 	}
 
 	private static void generarOperacion(NodoBase nodo){
