@@ -1,0 +1,8 @@
+string saludo;
+string despedida;
+saludo := "Compiladores";
+despedida := "Exito";
+write saludo;
+write " ";
+write despedida;
+write 2026

@@ -1,0 +1,27 @@
+function cuadrado(int x): int
+  return x * x
+end
+procedure reportar(string msg, int valor)
+  write msg;
+  write valor
+end
+
+int datos[4];
+int k;
+int total;
+bool procesado;
+
+k := 0;
+repeat
+  datos[k] := cuadrado(k + 1);
+  k := k + 1
+until k = 4;
+
+total := datos[0] + datos[1] + datos[2] + datos[3];
+procesado := total < 50;
+
+if procesado then
+  reportar("SumaCuadrados: ", total)
+else
+  reportar("Excede: ", total)
+end

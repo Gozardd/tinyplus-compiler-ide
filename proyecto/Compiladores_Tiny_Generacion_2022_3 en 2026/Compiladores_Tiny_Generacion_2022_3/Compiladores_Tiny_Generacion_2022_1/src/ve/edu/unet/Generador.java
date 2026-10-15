@@ -33,6 +33,7 @@ public class Generador {
 	 * Asocia nombre_parametro -> offset positivo relativo a MP (K - i + 1)
 	 */
 	private static Map<String, Integer> paramsActuales = new HashMap<String, Integer>();
+	private static Map<String, TipoDato> tiposParamsActuales = new HashMap<String, TipoDato>();
 
 	/* Tabla de literales de cadena en dMem:
 	 * Asocia texto -> direccion fija en dMem despues de variables globales
@@ -62,6 +63,10 @@ public class Generador {
 		return paramsActuales;
 	}
 
+	public static Map<String, TipoDato> getTiposParamsActuales() {
+		return tiposParamsActuales;
+	}
+
 	public static Map<String, Integer> getTablaCadenas() {
 		return tablaCadenas;
 	}
@@ -76,7 +81,11 @@ public class Generador {
 		if (nodo instanceof NodoBooleano) return TipoDato.BOOL;
 		if (nodo instanceof NodoCadena) return TipoDato.STRING;
 		if (nodo instanceof NodoIdentificador) {
-			return tablaSimbolos != null ? tablaSimbolos.getTipo(((NodoIdentificador) nodo).getNombre()) : null;
+			String nombreId = ((NodoIdentificador) nodo).getNombre();
+			if (tiposParamsActuales.containsKey(nombreId)) {
+				return tiposParamsActuales.get(nombreId);
+			}
+			return tablaSimbolos != null ? tablaSimbolos.getTipo(nombreId) : null;
 		}
 		if (nodo instanceof NodoArreglo) {
 			return tablaSimbolos != null ? tablaSimbolos.getTipo(((NodoArreglo) nodo).getNombre()) : null;
@@ -455,13 +464,17 @@ public class Generador {
 		// Guardar estado del llamador
 		int prevDesplazamientoTmp = desplazamientoTmp;
 		Map<String, Integer> prevParams = paramsActuales;
+		Map<String, TipoDato> prevTipos = tiposParamsActuales;
 
 		// Contar parametros formales K
 		List<String> nombresParams = new ArrayList<String>();
+		tiposParamsActuales = new HashMap<String, TipoDato>();
 		NodoBase p = f.getListaParametros();
 		while (p != null) {
 			if (p instanceof NodoDeclaracion) {
-				nombresParams.add(((NodoDeclaracion) p).getVariable());
+				NodoDeclaracion nd = (NodoDeclaracion) p;
+				nombresParams.add(nd.getVariable());
+				tiposParamsActuales.put(nd.getVariable(), nd.getTipo());
 			}
 			p = p.getHermanoDerecha();
 		}
@@ -487,6 +500,7 @@ public class Generador {
 		// Restaurar estado del llamador
 		desplazamientoTmp = prevDesplazamientoTmp;
 		paramsActuales = prevParams;
+		tiposParamsActuales = prevTipos;
 
 		if(UtGen.debug) UtGen.emitirComentario("<- funcion: " + f.getNombre());
 	}
