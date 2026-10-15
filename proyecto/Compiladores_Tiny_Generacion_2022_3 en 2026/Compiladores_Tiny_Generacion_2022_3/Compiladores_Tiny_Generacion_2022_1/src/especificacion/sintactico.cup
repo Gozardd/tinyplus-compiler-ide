@@ -28,7 +28,17 @@ Mas informacion en: http//4thmouse.com/index.php/2007/02/15/using-custom-symbols
         Util.imprimirAST(root);
 		TablaSimbolos ts = new TablaSimbolos();
 		ts.cargarTabla(root);
-		ts.ImprimirClaves();
+		ts.imprimirTabla();
+		System.out.println();
+		System.out.println("ANALISIS SEMANTICO");
+		System.out.println();
+		Semantico semantico = new Semantico(ts);
+		semantico.verificar(root);
+		if (semantico.getErrores() > 0) {
+			System.out.println();
+			System.out.println("Compilacion abortada: " + semantico.getErrores() + " error(es) semantico(s).");
+			return;
+		}
 		Generador.setTablaSimbolos(ts);
 		Generador.generarCodigoObjeto(root);
 	}
@@ -70,6 +80,21 @@ terminal LPAREN;
 terminal RPAREN;
 terminal SEMI;
 
+/* Nuevos terminales Tiny++: tipos, booleanos, subrutinas y puntuacion */
+terminal INT;
+terminal BOOL;
+terminal STRING_T;
+terminal TRUE;
+terminal FALSE;
+terminal PROCEDURE;
+terminal FUNCTION;
+terminal RETURN;
+terminal LBRACKET;
+terminal RBRACKET;
+terminal COMMA;
+terminal COLON;
+terminal String STRING_LITERAL;
+
 /* Simbolos No Terminales */
 non terminal program;
 non terminal NodoBase stmt_seq;
@@ -84,6 +109,17 @@ non terminal NodoBase simple_exp;
 non terminal NodoBase term;
 non terminal NodoBase factor;
 
+/* Nuevos no terminales Tiny++: declaraciones, subrutinas y llamadas */
+non terminal NodoBase decl_list;
+non terminal NodoBase decl;
+non terminal NodoBase var_decl;
+non terminal NodoBase func_decl;
+non terminal NodoBase param_list;
+non terminal NodoBase param;
+non terminal ve.edu.unet.nodosAST.TipoDato type_spec;
+non terminal NodoBase arg_list;
+non terminal NodoBase return_stmt;
+
 /* Precedencia de operadores */
 precedence left PLUS;
 precedence left MINUS;
@@ -91,9 +127,40 @@ precedence left TIMES;
 
 
 /* REGLAS GRAMATICALES */
-program     ::= stmt_seq:s	{: if(debug) System.out.println("\t regla 1"); 
-					ast = s;
+program     ::= decl_list:dl stmt_seq:s	{: if(debug) System.out.println("\t regla 1");
+					if(dl!=null){
+						NodoBase ultimaDecl = dl;
+						while(ultimaDecl.TieneHermano()){
+							ultimaDecl = ultimaDecl.getHermanoDerecha();
+						}
+						ultimaDecl.setHermanoDerecha(s);
+						ast = dl;
+					}else{
+						ast = s;
+					}
 					:}
+		;
+
+/* decl_list puede estar vacia (programas Tiny clasicos sin declaraciones) */
+decl_list   ::= decl_list:dli decl:d	{: if(debug) System.out.println("\t regla decl_list a");
+					NodoBase ultima = dli;
+					if(ultima!=null){
+						while(ultima.TieneHermano()){
+							ultima = ultima.getHermanoDerecha();
+						}
+						ultima.setHermanoDerecha(d);
+						RESULT=dli;
+					}else{
+						RESULT=d;
+					}
+					:}
+	    	| 	{: if(debug) System.out.println("\t regla decl_list b (vacia)");
+					RESULT=null;
+					:}
+		;
+
+decl        ::= var_decl:v	{: RESULT=v; :}
+		| func_decl:f	{: RESULT=f; :}
 		;
 
 stmt_seq    ::= stmt_seq:ini SEMI stmt:sent	{: if(debug) System.out.println("\t regla 2a"); 
@@ -125,14 +192,75 @@ stmt        ::= if_stmt:sif	{: if(debug) System.out.println("\t regla 3a");
             | read_stmt:slec	{: if(debug) System.out.println("\t regla 3d"); 
 					RESULT=slec;
 					:}
-            | write_stmt:sesc	{: if(debug) System.out.println("\t regla 3e"); 
+            | write_stmt:sesc	{: if(debug) System.out.println("\t regla 3e");
 					RESULT=sesc;
 					:}
-            | error	{: if(debug) System.out.println("\t regla 3f"); 
+            | return_stmt:sret	{: if(debug) System.out.println("\t regla 3g");
+					RESULT=sret;
+					:}
+            | ID:nombreFuncion LPAREN arg_list:args RPAREN	{: if(debug) System.out.println("\t regla 3h: llamada procedimiento");
+					RESULT = new NodoLlamada(nombreFuncion.toString(),args);
+					:}
+            | error	{: if(debug) System.out.println("\t regla 3f");
 				System.out.println("Ocurrio error en cup # 0004 C");
 				RESULT=null;
 				:}
             ;
+
+return_stmt ::= RETURN exp:ex	{: if(debug) System.out.println("\t regla return");
+					RESULT = new NodoReturn(ex);
+					:}
+		;
+
+/* Declaracion de variable, simple o arreglo de tamano constante */
+var_decl    ::= type_spec:t ID:nombre SEMI	{: if(debug) System.out.println("\t regla var_decl simple");
+					RESULT = new NodoDeclaracion(nombre.toString(),t);
+					:}
+		| type_spec:t ID:nombre LBRACKET NUM:tam RBRACKET SEMI	{: if(debug) System.out.println("\t regla var_decl arreglo");
+					RESULT = new NodoDeclaracion(nombre.toString(),t,Integer.parseInt(tam));
+					:}
+		;
+
+type_spec   ::= INT	{: if(debug) System.out.println("\t regla type_spec int");
+					RESULT = ve.edu.unet.nodosAST.TipoDato.INT;
+					:}
+		| BOOL	{: if(debug) System.out.println("\t regla type_spec bool");
+					RESULT = ve.edu.unet.nodosAST.TipoDato.BOOL;
+					:}
+		| STRING_T	{: if(debug) System.out.println("\t regla type_spec string");
+					RESULT = ve.edu.unet.nodosAST.TipoDato.STRING;
+					:}
+		;
+
+/* Procedimientos (sin retorno) y funciones (con retorno tipado) */
+func_decl   ::= PROCEDURE ID:nombre LPAREN param_list:params RPAREN stmt_seq:cuerpo END	{: if(debug) System.out.println("\t regla func_decl procedure");
+					RESULT = new NodoFuncion(nombre.toString(),null,params,cuerpo);
+					:}
+		| FUNCTION ID:nombre LPAREN param_list:params RPAREN COLON type_spec:tipoRet stmt_seq:cuerpo END	{: if(debug) System.out.println("\t regla func_decl function");
+					RESULT = new NodoFuncion(nombre.toString(),tipoRet,params,cuerpo);
+					:}
+		;
+
+param_list  ::= param_list:pl COMMA param:p	{: if(debug) System.out.println("\t regla param_list a");
+					NodoBase ultimoParam = pl;
+					while(ultimoParam.TieneHermano()){
+						ultimoParam = ultimoParam.getHermanoDerecha();
+					}
+					ultimoParam.setHermanoDerecha(p);
+					RESULT=pl;
+					:}
+	    	| param:p	{: if(debug) System.out.println("\t regla param_list b");
+					RESULT=p;
+					:}
+	    	|	{: if(debug) System.out.println("\t regla param_list c (vacia)");
+					RESULT=null;
+					:}
+		;
+
+param       ::= type_spec:t ID:nombre	{: if(debug) System.out.println("\t regla param");
+					RESULT = new NodoDeclaracion(nombre.toString(),t);
+					:}
+		;
 
 if_stmt     ::= IF exp:ex THEN stmt_seq:pthen END	{: if(debug) System.out.println("\t regla 4a"); 
 		RESULT = new NodoIf(ex,pthen);
@@ -147,7 +275,7 @@ repeat_stmt ::= REPEAT stmt_seq:cuerpo UNTIL exp:prueba	{: if(debug) System.out.
 							:}
 		;
 
-assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte del medio"); 
+assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte del medio");
 				/*lineanum=1000; //Pasar/Obtener la linea correcta por el Simbolo
 				String nombre = variable.getName();*/
 				:}
@@ -157,6 +285,14 @@ assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte d
 					else{
 					RESULT = null;
 					System.out.println("Ocurrio error en cup # 0001");
+					}
+					:}
+		| ID:variable LBRACKET exp:indice RBRACKET ASSIGN exp:ex	{: if(debug) System.out.println("\t regla 6b asignacion a arreglo");
+					if(variable!=null)
+					RESULT = new NodoAsignacion(variable.toString(),indice,ex);
+					else{
+					RESULT = null;
+					System.out.println("Ocurrio error en cup # 0001 B");
 					}
 					:}
 		;
@@ -222,17 +358,48 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(debug) System.out.println("\t regla 1
 						System.out.println("Ocurrio error en cup # 0005");
 					}
 					:}
-		| ID:variable	{: if(debug) System.out.println("\t regla 12c"); 
+		| ID:variable	{: if(debug) System.out.println("\t regla 12c");
 					if(variable!=null){
 						System.out.println("Construyendo Nodo ID para Lexema: "+ variable.toString());
-						RESULT= new NodoIdentificador(variable.toString());		
+						RESULT= new NodoIdentificador(variable.toString());
 					}else{
 						RESULT = null;
 						System.out.println("Ocurrio error en cup # 0005");
 					}
 					:}
-		| error	{: if(debug) System.out.println("\t regla 12d"); 
+		| ID:variable LBRACKET exp:indice RBRACKET	{: if(debug) System.out.println("\t regla 12e: acceso a arreglo");
+					RESULT = new NodoArreglo(variable.toString(),indice);
+					:}
+		| ID:nombreFuncion LPAREN arg_list:args RPAREN	{: if(debug) System.out.println("\t regla 12f: llamada a funcion");
+					RESULT = new NodoLlamada(nombreFuncion.toString(),args);
+					:}
+		| TRUE	{: if(debug) System.out.println("\t regla 12g: true");
+				RESULT = new NodoBooleano(true);
+				:}
+		| FALSE	{: if(debug) System.out.println("\t regla 12h: false");
+				RESULT = new NodoBooleano(false);
+				:}
+		| STRING_LITERAL:valor	{: if(debug) System.out.println("\t regla 12i: cadena literal");
+				RESULT = new NodoCadena(valor);
+				:}
+		| error	{: if(debug) System.out.println("\t regla 12d");
 				System.out.println("Ocurrio error en cup # 0003");
 				RESULT=null;
 				:}
+		;
+
+arg_list    ::= arg_list:al COMMA exp:e	{: if(debug) System.out.println("\t regla arg_list a");
+					NodoBase ultimoArg = al;
+					while(ultimoArg.TieneHermano()){
+						ultimoArg = ultimoArg.getHermanoDerecha();
+					}
+					ultimoArg.setHermanoDerecha(e);
+					RESULT=al;
+					:}
+	    	| exp:e	{: if(debug) System.out.println("\t regla arg_list b");
+					RESULT=e;
+					:}
+	    	|	{: if(debug) System.out.println("\t regla arg_list c (vacia)");
+					RESULT=null;
+					:}
 		;

@@ -1,0 +1,20 @@
+function llamaAdelante(int x): int
+  return adyacente(x + 1)
+end
+function adyacente(int y): int
+  return y * 10
+end
+function suma(int a, int b): int
+  return a + b
+end
+procedure mostrarDoble(int n)
+  write n * 2
+end
+
+int resA;
+int resB;
+resA := llamaAdelante(5);
+write resA;
+resB := suma(suma(1, 2), 7);
+write resB;
+mostrarDoble(50)

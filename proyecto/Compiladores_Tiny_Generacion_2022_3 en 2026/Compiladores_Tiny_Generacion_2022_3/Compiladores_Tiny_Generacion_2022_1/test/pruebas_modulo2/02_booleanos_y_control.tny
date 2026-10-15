@@ -1,0 +1,15 @@
+bool flag;
+int contador;
+int sumador;
+flag := true;
+if flag then
+  contador := 1
+else
+  contador := 99
+end;
+sumador := 0;
+repeat
+  sumador := sumador + contador;
+  contador := contador + 1
+until contador = 6;
+write sumador

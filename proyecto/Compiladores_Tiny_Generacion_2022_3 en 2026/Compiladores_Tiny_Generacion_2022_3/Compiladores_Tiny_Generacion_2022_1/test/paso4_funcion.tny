@@ -1,0 +1,6 @@
+function duplicar(int n): int
+  return n * 2
+end
+int valor;
+valor := duplicar(21);
+write valor

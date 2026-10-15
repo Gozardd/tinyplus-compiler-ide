@@ -1,0 +1,17 @@
+function potencia(int base, int exp): int
+  if exp = 0 then
+    return 1
+  else
+    return base * potencia(base, exp - 1)
+  end
+end
+function sumaTres(int a, int b, int c): int
+  return a + b + c
+end
+
+int resPot;
+int resSum;
+resPot := potencia(2, 5);
+write resPot;
+resSum := sumaTres(10, 20, 30);
+write resSum

@@ -1,0 +1,9 @@
+bool activo;
+int resultado;
+activo := true;
+if activo then
+  resultado := 100
+else
+  resultado := 200
+end;
+write resultado

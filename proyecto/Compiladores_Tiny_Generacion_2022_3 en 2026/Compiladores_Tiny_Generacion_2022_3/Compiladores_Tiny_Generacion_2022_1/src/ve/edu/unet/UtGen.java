@@ -12,6 +12,11 @@ public class UtGen {
 	private static int instruccionMasAlta=0;	//Almacena la direccion de la instruccion que ha resultado ser la mayor hasta ahora 
 	public static boolean debug=true;
 
+	public static void reiniciar() {
+		instruccionActual = 0;
+		instruccionMasAlta = 0;
+	}
+
 	/* PC = program counter, registro[7] donde se almacena la direccion (linea)
 	 *  actual de ejecucion del codigo objeto 
 	 */
