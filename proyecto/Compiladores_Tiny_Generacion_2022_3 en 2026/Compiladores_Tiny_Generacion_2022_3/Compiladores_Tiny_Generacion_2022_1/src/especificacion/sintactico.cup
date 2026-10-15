@@ -198,6 +198,9 @@ stmt        ::= if_stmt:sif	{: if(debug) System.out.println("\t regla 3a");
             | return_stmt:sret	{: if(debug) System.out.println("\t regla 3g");
 					RESULT=sret;
 					:}
+            | ID:nombreFuncion LPAREN arg_list:args RPAREN	{: if(debug) System.out.println("\t regla 3h: llamada procedimiento");
+					RESULT = new NodoLlamada(nombreFuncion.toString(),args);
+					:}
             | error	{: if(debug) System.out.println("\t regla 3f");
 				System.out.println("Ocurrio error en cup # 0004 C");
 				RESULT=null;

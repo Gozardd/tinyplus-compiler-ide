@@ -64,6 +64,8 @@ public class Semantico {
 			tipoDe(((NodoEscribir) nodo).getExpresion());
 		} else if (nodo instanceof NodoReturn) {
 			verificarReturn((NodoReturn) nodo);
+		} else if (nodo instanceof NodoLlamada) {
+			verificarLlamadaSentencia((NodoLlamada) nodo);
 		} else {
 			tipoDe(nodo);
 		}
@@ -224,7 +226,7 @@ public class Semantico {
 		return simbolo.getTipo();
 	}
 
-	private TipoDato tipoDeLlamada(NodoLlamada n) {
+	private RegistroSimbolo validarArgumentosLlamada(NodoLlamada n) {
 		List<TipoDato> tiposArgumentos = new ArrayList<TipoDato>();
 		NodoBase arg = n.getListaArgumentos();
 		while (arg != null) {
@@ -256,7 +258,18 @@ public class Semantico {
 				}
 			}
 		}
+		return simbolo;
+	}
 
+	private void verificarLlamadaSentencia(NodoLlamada n) {
+		validarArgumentosLlamada(n);
+	}
+
+	private TipoDato tipoDeLlamada(NodoLlamada n) {
+		RegistroSimbolo simbolo = validarArgumentosLlamada(n);
+		if (simbolo == null) {
+			return null;
+		}
 		if (simbolo.getTipo() == null) {
 			error("'" + n.getNombreFuncion() + "' es un procedimiento y no retorna un valor, no puede usarse en una expresion");
 			return null;
