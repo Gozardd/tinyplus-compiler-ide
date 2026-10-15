@@ -25,7 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Conectar diálogo modal de información del equipo
     setupAboutModal();
 
-    // 6. Notificación de arranque
+    // 6. Conectar diálogo modal para cargar ensamblador .tm
+    setupLoadTMModal();
+
+    // 7. Notificación de arranque
     window.TinyConsole.system('IDE Tiny++ Studio listo. Compilador y depurador TM preparados.');
 
     console.log('%c[Tiny++ Studio]%c IDE inicializado con éxito', 
@@ -243,3 +246,92 @@ function setupAboutModal() {
         }
     });
 }
+
+/**
+ * Controla la carga interactiva de archivos .tm o ensamblador pegado en la Tiny Machine
+ */
+function setupLoadTMModal() {
+    const modal = document.getElementById('modal-load-tm');
+    const btnToolbarOpen = document.getElementById('btn-toolbar-load-tm');
+    const btnIMemOpen = document.getElementById('btn-imem-load-tm');
+    const btnClose = document.getElementById('modal-load-tm-close');
+    const btnCancel = document.getElementById('btn-load-tm-cancel');
+    const btnConfirm = document.getElementById('btn-load-tm-confirm');
+    const fileInput = document.getElementById('input-file-tm');
+    const fileLabel = document.getElementById('label-selected-tm-file');
+    const textarea = document.getElementById('textarea-tm-code');
+
+    if (!modal) return;
+
+    const openModal = () => {
+        modal.classList.add('active');
+        if (textarea) textarea.focus();
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+    };
+
+    if (btnToolbarOpen) btnToolbarOpen.addEventListener('click', openModal);
+    if (btnIMemOpen) btnIMemOpen.addEventListener('click', openModal);
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (btnCancel) btnCancel.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Cargar contenido cuando se selecciona un archivo .tm del disco
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (fileLabel) fileLabel.textContent = `${file.name} (${Math.round(file.size / 1024 * 10) / 10} KB)`;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (textarea) textarea.value = event.target.result;
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    // Confirmar carga de instrucciones en la Tiny Machine
+    if (btnConfirm) {
+        btnConfirm.addEventListener('click', () => {
+            const rawText = textarea ? textarea.value.trim() : '';
+            if (!rawText) {
+                if (window.TinyConsole) {
+                    window.TinyConsole.warn('No se ha proporcionado código ensamblador TM para cargar.');
+                }
+                return;
+            }
+
+            const rawLines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+            if (window.TinyMachine) {
+                window.TinyMachine.reset();
+                window.TinyMachine.loadInstructions(rawLines);
+            }
+
+            if (window.TinyDebuggerUI) {
+                window.TinyDebuggerUI.renderIMem();
+                window.TinyDebuggerUI.renderDMem();
+                window.TinyDebuggerUI.updateRegisters(window.TinyMachine.registers);
+                window.TinyDebuggerUI.updateBreakpointCount();
+                const countBadge = document.getElementById('imem-count');
+                if (countBadge) countBadge.textContent = `${window.TinyMachine.iMem.length} instrs`;
+                window.TinyDebuggerUI.setStatus('CARGADO');
+            }
+
+            if (window.TinyConsole) {
+                window.TinyConsole.success(`[TM CARGA] Se cargaron ${window.TinyMachine.iMem.length} instrucciones ensamblador en IMem.`);
+                window.TinyConsole.info('Puedes iniciar la depuración con Step (F10) o Run (F5).');
+            }
+
+            closeModal();
+        });
+    }
+}
+

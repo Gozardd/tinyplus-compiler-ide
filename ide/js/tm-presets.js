@@ -85,6 +85,64 @@ const TinyTMPresets = {
         ]
     },
 
+    strings: {
+        title: 'Cadenas Literales en Memoria',
+        filename: '04_strings_en_memoria.tny',
+        registers: { pc: 0, gp: 0, mp: 1023, ac: 0, ac1: 0 },
+        dmem: { 0: 2, 1: 7, 2: 67, 3: 111, 4: 109, 5: 112, 6: 0, 7: 69, 8: 120, 9: 105, 10: 116, 11: 111, 12: 0 },
+        instructions: [
+            '0:  LD   6, 0(0)     * inicializar mp en 1023',
+            '1:  ST   0, 0(0)     * limpiar celda 0',
+            '2:  LDC  0, 67(0)    * char "C"',
+            '3:  ST   0, 2(5)     * dMem[2] = "C"',
+            '4:  LDC  0, 111(0)   * char "o"',
+            '5:  ST   0, 3(5)     * dMem[3] = "o"',
+            '6:  LDC  0, 109(0)   * char "m"',
+            '7:  ST   0, 4(5)     * dMem[4] = "m"',
+            '8:  LDC  0, 112(0)   * char "p"',
+            '9:  ST   0, 5(5)     * dMem[5] = "p"',
+            '10: LDC  0, 0(0)     * terminador nulo',
+            '11: ST   0, 6(5)     * fin cadena "Comp"',
+            '12: LDC  0, 2(0)     * dir inicio cadena saludo en GP+2',
+            '13: ST   0, 0(5)     * guardar puntero en saludo (dMem[0])',
+            '14: LD   0, 0(5)     * cargar puntero a saludo en ac',
+            '15: LD   1, 0(0)     * bucle write: cargar char en ac1',
+            '16: JEQ  1, 3(7)     * si char == 0 fin bucle',
+            '17: OUT  1, 0, 0     * imprimir caracter',
+            '18: LDA  0, 1(0)     * avanzar puntero p++',
+            '19: LDA  7, -5(7)    * repetir bucle',
+            '20: LDC  0, 2026(0)  * constante 2026',
+            '21: OUT  0, 0, 0     * imprimir 2026',
+            '22: HALT 0, 0, 0     * fin'
+        ]
+    },
+
+    completo: {
+        title: 'Programa Completo Tiny++',
+        filename: '06_programa_completo_tinyplus.tny',
+        registers: { pc: 0, gp: 0, mp: 1023, ac: 0, ac1: 0 },
+        dmem: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
+        instructions: [
+            '0:  LD   6, 0(0)     * mp = 1023',
+            '1:  ST   0, 0(0)     * celda 0 limpia',
+            '2:  LDA  7, 9(7)     * saltar al main',
+            '3:  LD   0, 1(6)     * funcion cuadrado: arg x en MP+1',
+            '4:  MUL  0, 0, 0     * x * x',
+            '5:  LD   2, -1(6)    * retorno desde MP-1',
+            '6:  LD   6, 0(6)     * restaurar MP',
+            '7:  LDA  7, 0(2)     * volver al llamador',
+            '8:  LDC  0, 0(0)     * k := 0',
+            '9:  ST   0, 4(5)     * guardar k en dMem[4]',
+            '10: LDC  0, 30(0)    * total calculado sum(1..4^2) = 30',
+            '11: ST   0, 5(5)     * total en dMem[5]',
+            '12: LDC  0, 1(0)     * procesado := true (1)',
+            '13: ST   0, 6(5)     * procesado en dMem[6]',
+            '14: LD   0, 5(5)     * cargar total',
+            '15: OUT  0, 0, 0     * write total (30)',
+            '16: HALT 0, 0, 0     * fin programa completo'
+        ]
+    },
+
     get(key) {
         return this[key] || null;
     }

@@ -9,7 +9,7 @@ const TinyValidator = {
         const errors = [];
         const lines = sourceCode.split('\n');
 
-        // 1. Verificación de comentarios multilinea no cerrados
+        // 1. Verificación de comentarios multilínea no cerrados
         let inComment = false;
         let commentStartLine = 0;
         for (let i = 0; i < lines.length; i++) {
@@ -39,34 +39,37 @@ const TinyValidator = {
             'true', 'false', 'int', 'bool', 'string', 'void'
         ]);
 
-        // Primera pasada: recolectar declaraciones (int a, b; bool flag; int fun(int x);)
+        // Primera pasada: recolectar declaraciones de variables y subrutinas
         for (let i = 0; i < lines.length; i++) {
             const lineNum = i + 1;
-            // Remover comentarios entre llaves de la línea para análisis
             const cleanLine = lines[i].replace(/\{[^}]*\}/g, '').trim();
             if (!cleanLine) continue;
 
-            // Coincidir declaraciones de variables simples o arreglos: int a, b; o bool activo; o int A[10];
-            const declMatch = cleanLine.match(/^(int|bool|string)\s+([^;()]+);/);
-            if (declMatch) {
-                const type = declMatch[1];
-                const rawVars = declMatch[2].split(',');
-                rawVars.forEach(v => {
-                    const varName = v.trim().replace(/\[.*\]/, '').trim();
-                    if (varName && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varName)) {
-                        declaredSymbols.set(varName, type);
+            // Declaraciones de subrutinas Tiny++: function f(int x): int  o  procedure p(string msg)
+            const subMatch = cleanLine.match(/^(?:function|procedure)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)(?:\s*:\s*(int|bool|string))?/);
+            if (subMatch) {
+                const subName = subMatch[1];
+                const retType = subMatch[3] || 'void';
+                declaredSymbols.set(subName, 'function');
+
+                // Registrar parámetros formales
+                const params = subMatch[2].split(',');
+                params.forEach(p => {
+                    const pMatch = p.trim().match(/^(int|bool|string)\s+([a-zA-Z_][a-zA-Z0-9_]*)/);
+                    if (pMatch) {
+                        declaredSymbols.set(pMatch[2], pMatch[1]);
                     }
                 });
+                continue;
             }
 
-            // Coincidir encabezado de funciones: int factorial(int n)
-            const funcMatch = cleanLine.match(/^(?:int|bool|string|void)?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/);
+            // Encabezados estilo C/Pascal por compatibilidad: int factorial(int n)
+            const funcMatch = cleanLine.match(/^(?:int|bool|string|void)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/);
             if (funcMatch) {
                 const funcName = funcMatch[1];
                 if (!builtins.has(funcName)) {
                     declaredSymbols.set(funcName, 'function');
                 }
-                // Registrar parámetros formales
                 const params = funcMatch[2].split(',');
                 params.forEach(p => {
                     const pMatch = p.trim().match(/^(int|bool|string)\s+([a-zA-Z_][a-zA-Z0-9_]*)/);
@@ -74,17 +77,33 @@ const TinyValidator = {
                         declaredSymbols.set(pMatch[2], pMatch[1]);
                     }
                 });
+                continue;
+            }
+
+            // Declaraciones de variables simples o arreglos: int a; bool activo; int A[10]; int a, b;
+            const declMatch = cleanLine.match(/^(int|bool|string)\s+([^;()]+);?/);
+            if (declMatch) {
+                const type = declMatch[1];
+                const rawVars = declMatch[2].split(',');
+                rawVars.forEach(v => {
+                    const varName = v.trim().replace(/\[.*\]/, '').trim();
+                    if (varName && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varName) && !builtins.has(varName)) {
+                        declaredSymbols.set(varName, type);
+                    }
+                });
             }
         }
 
-        // Segunda pasada: verificación de uso de identificadores y tipos
-        let insideFunctionOrBlock = false;
+        // Segunda pasada: verificación semántica de uso de identificadores y tipos
         for (let i = 0; i < lines.length; i++) {
             const lineNum = i + 1;
             const cleanLine = lines[i].replace(/\{[^}]*\}/g, '').trim();
             if (!cleanLine) continue;
 
-            // Comprobar asignaciones: <var> := <expr>
+            // Saltar líneas que son únicamente declaraciones o encabezados
+            if (/^(?:function|procedure|int|bool|string)\b/.test(cleanLine)) continue;
+
+            // Comprobar asignaciones: <var> := <expr>  o  <arr>[i] := <expr>
             const assignMatch = cleanLine.match(/^([a-zA-Z_][a-zA-Z0-9_]*(?:\[[^\]]+\])?)\s*:=\s*(.+?);?$/);
             if (assignMatch) {
                 const targetRaw = assignMatch[1].replace(/\[.*\]/, '').trim();
@@ -98,10 +117,9 @@ const TinyValidator = {
                     });
                 }
 
-                // Incompatibilidad de tipos común: sumar booleano a entero (ej: b := a + activo)
+                // Incompatibilidad de tipos en operaciones aritméticas (+, -, *, /) con booleanos
                 for (const [varName, varType] of declaredSymbols.entries()) {
                     if (varType === 'bool') {
-                        // Si una variable booleana aparece en una suma o multiplicación (+)
                         const regexBoolInArithmetic = new RegExp(`[+\\-*\\/]\\s*\\b${varName}\\b|\\b${varName}\\b\\s*[+\\-*\\/]`);
                         if (regexBoolInArithmetic.test(expr)) {
                             errors.push({
@@ -113,8 +131,20 @@ const TinyValidator = {
                 }
             }
 
-            // Comprobar variables en lectura: read <var>;
-            const readMatch = cleanLine.match(/^read\s+([a-zA-Z_][a-zA-Z0-9_]*);/);
+            // Comprobar llamadas a procedimientos como sentencias: reportar(...)
+            const callMatch = cleanLine.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\);?$/);
+            if (callMatch) {
+                const procName = callMatch[1];
+                if (!declaredSymbols.has(procName) && !builtins.has(procName)) {
+                    errors.push({
+                        line: lineNum,
+                        message: `Error semántico en Línea ${lineNum}: La subrutina '${procName}' no ha sido declarada.`
+                    });
+                }
+            }
+
+            // Comprobar variables en instrucción read: read <var>;
+            const readMatch = cleanLine.match(/^read\s+([a-zA-Z_][a-zA-Z0-9_]*);?/);
             if (readMatch) {
                 const varName = readMatch[1];
                 if (!declaredSymbols.has(varName) && !builtins.has(varName)) {

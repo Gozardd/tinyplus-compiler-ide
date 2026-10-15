@@ -18,6 +18,9 @@ bin/
 INSTRUCCIONES_*.md
 plan_*.md
 GUIA_METODOLOGICA_*.md
+GUION_*.md
+*defensa*.md
+*DEFENSA*.md
 
 # Diapositivas y material de estudio de la materia (mantener en PC, no subir a GitHub)
 parcial1/

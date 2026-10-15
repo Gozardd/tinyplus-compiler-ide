@@ -33,14 +33,24 @@
                     <label for="example-selector" class="sr-only">Ejemplo</label>
                     <select id="example-selector" class="select-input">
                         <option value="" disabled selected>Cargar ejemplo Tiny++...</option>
-                        <option value="factorial">Factorial Recursivo</option>
-                        <option value="arreglos">Arreglos y Expresiones</option>
-                        <option value="ambitos">Ámbitos y Variables Locales</option>
-                        <option value="error">Detección de Errores</option>
+                        <option value="factorial">1. Factorial Recursivo</option>
+                        <option value="arreglos">2. Arreglos y Expresiones</option>
+                        <option value="ambitos">3. Ámbitos y Variables Locales</option>
+                        <option value="strings">4. Cadenas Literales (Strings)</option>
+                        <option value="completo">5. Integración Completa Tiny++</option>
+                        <option value="error">6. Detección de Errores Semánticos</option>
                     </select>
                 </div>
 
                 <div class="action-buttons-group">
+                    <button id="btn-toolbar-load-tm" class="btn btn-secondary" title="Cargar archivo .tm compilado o pegar ensamblador">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Cargar .TM</span>
+                    </button>
                     <button id="btn-compile" class="btn btn-primary" title="Compilar código fuente Tiny++">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
@@ -238,6 +248,7 @@ write y;
                                     </select>
                                     <button id="btn-imem-topc" class="btn-micro" title="Desplazar la vista hasta la instrucción actual del PC">Ir al PC</button>
                                     <button id="btn-imem-clearbp" class="btn-micro" title="Remover todos los puntos de interrupción">Limpiar BPs</button>
+                                    <button id="btn-imem-load-tm" class="btn-micro" title="Cargar archivo .tm o pegar ensamblador Tiny Machine">Cargar .TM</button>
                                 </div>
                             </div>
                             <div class="memory-header imem-header">
@@ -415,6 +426,38 @@ write y;
                         <span class="team-member-name"><strong>Henyer Molina (V-31.098.304)</strong></span>
                         <span class="team-member-role">Módulo 4: IDE Visual & Integración</span>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIÁLOGO MODAL: CARGAR ARCHIVO O CÓDIGO .TM -->
+    <div class="modal-overlay" id="modal-load-tm">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <span>Cargar Código Ensamblador Tiny Machine (.tm)</span>
+                <button class="modal-close-btn" id="modal-load-tm-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 12px; font-size: 13px; color: var(--text-secondary);">
+                    Carga un archivo <code>.tm</code> generado por el compilador Java o pega las instrucciones directamente para ejecutarlas paso a paso en el depurador:
+                </p>
+                <div style="margin-bottom: 12px; display: flex; gap: 10px; align-items: center;">
+                    <label for="input-file-tm" class="btn btn-secondary" style="cursor: pointer; padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Seleccionar archivo .tm...</span>
+                    </label>
+                    <input type="file" id="input-file-tm" accept=".tm,.txt" style="display: none;" />
+                    <span id="label-selected-tm-file" style="font-size: 12px; color: var(--text-muted); font-style: italic;">Ningún archivo seleccionado</span>
+                </div>
+                <textarea id="textarea-tm-code" class="code-editor" style="height: 180px; width: 100%; font-family: monospace; font-size: 12px; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px; resize: vertical;" placeholder="Pega aquí las instrucciones ensamblador de la TM...&#10;0:  LD  6,0(0)  * inicializar mp&#10;1:  ST  0,0(0)  * limpiar celda 0&#10;..."></textarea>
+                <div style="margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px;">
+                    <button id="btn-load-tm-cancel" class="btn btn-secondary">Cancelar</button>
+                    <button id="btn-load-tm-confirm" class="btn btn-primary">Cargar en Depurador</button>
                 </div>
             </div>
         </div>
