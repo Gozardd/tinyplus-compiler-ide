@@ -3,6 +3,7 @@ package ve.edu.unet;
 import ve.edu.unet.nodosAST.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Generador {
 	/* Ilustracion de la disposicion de la memoria en
@@ -30,6 +31,12 @@ public class Generador {
 	 * Asocia nombre_parametro -> offset positivo relativo a MP (K - i + 1)
 	 */
 	private static Map<String, Integer> paramsActuales = new HashMap<String, Integer>();
+
+	/* Tabla de literales de cadena en dMem:
+	 * Asocia texto -> direccion fija en dMem despues de variables globales
+	 */
+	private static Map<String, Integer> tablaCadenas = new LinkedHashMap<String, Integer>();
+	private static int siguienteDirCadena = 0;
 	
 	public static void setTablaSimbolos(TablaSimbolos tabla){
 		tablaSimbolos = tabla;
@@ -38,6 +45,70 @@ public class Generador {
 	public static Map<String, Integer> getParamsActuales() {
 		return paramsActuales;
 	}
+
+	public static Map<String, Integer> getTablaCadenas() {
+		return tablaCadenas;
+	}
+
+	public static TipoDato inferirTipo(NodoBase nodo) {
+		if (nodo == null) return null;
+		if (nodo instanceof NodoValor) return TipoDato.INT;
+		if (nodo instanceof NodoBooleano) return TipoDato.BOOL;
+		if (nodo instanceof NodoCadena) return TipoDato.STRING;
+		if (nodo instanceof NodoIdentificador) {
+			return tablaSimbolos != null ? tablaSimbolos.getTipo(((NodoIdentificador) nodo).getNombre()) : null;
+		}
+		if (nodo instanceof NodoArreglo) {
+			return tablaSimbolos != null ? tablaSimbolos.getTipo(((NodoArreglo) nodo).getNombre()) : null;
+		}
+		if (nodo instanceof NodoLlamada) {
+			return tablaSimbolos != null ? tablaSimbolos.getTipo(((NodoLlamada) nodo).getNombreFuncion()) : null;
+		}
+		if (nodo instanceof NodoOperacion) {
+			NodoOperacion op = (NodoOperacion) nodo;
+			if (op.getOperacion() == tipoOp.menor || op.getOperacion() == tipoOp.igual) {
+				return TipoDato.BOOL;
+			}
+			return TipoDato.INT;
+		}
+		return null;
+	}
+
+	private static void recolectarCadenas(NodoBase nodo) {
+		while (nodo != null) {
+			if (nodo instanceof NodoCadena) {
+				String texto = ((NodoCadena) nodo).getValor();
+				if (!tablaCadenas.containsKey(texto)) {
+					tablaCadenas.put(texto, siguienteDirCadena);
+					siguienteDirCadena += texto.length() + 1;
+				}
+			} else if (nodo instanceof NodoIf) {
+				recolectarCadenas(((NodoIf) nodo).getPrueba());
+				recolectarCadenas(((NodoIf) nodo).getParteThen());
+				recolectarCadenas(((NodoIf) nodo).getParteElse());
+			} else if (nodo instanceof NodoRepeat) {
+				recolectarCadenas(((NodoRepeat) nodo).getCuerpo());
+				recolectarCadenas(((NodoRepeat) nodo).getPrueba());
+			} else if (nodo instanceof NodoAsignacion) {
+				recolectarCadenas(((NodoAsignacion) nodo).getIndiceArreglo());
+				recolectarCadenas(((NodoAsignacion) nodo).getExpresion());
+			} else if (nodo instanceof NodoEscribir) {
+				recolectarCadenas(((NodoEscribir) nodo).getExpresion());
+			} else if (nodo instanceof NodoOperacion) {
+				recolectarCadenas(((NodoOperacion) nodo).getOpIzquierdo());
+				recolectarCadenas(((NodoOperacion) nodo).getOpDerecho());
+			} else if (nodo instanceof NodoFuncion) {
+				recolectarCadenas(((NodoFuncion) nodo).getCuerpo());
+			} else if (nodo instanceof NodoLlamada) {
+				recolectarCadenas(((NodoLlamada) nodo).getListaArgumentos());
+			} else if (nodo instanceof NodoReturn) {
+				recolectarCadenas(((NodoReturn) nodo).getExpresionRetorno());
+			} else if (nodo instanceof NodoArreglo) {
+				recolectarCadenas(((NodoArreglo) nodo).getIndice());
+			}
+			nodo = nodo.getHermanoDerecha();
+		}
+	}
 	
 	public static void generarCodigoObjeto(NodoBase raiz){
 		System.out.println();
@@ -45,6 +116,9 @@ public class Generador {
 		System.out.println("------ CODIGO OBJETO DEL LENGUAJE TINY GENERADO PARA LA TM ------");
 		System.out.println();
 		System.out.println();
+		tablaCadenas.clear();
+		siguienteDirCadena = tablaSimbolos != null ? tablaSimbolos.getTamanoGlobal() : 0;
+		recolectarCadenas(raiz);
 		generarPreludioEstandar();
 		generarSecuencia(raiz);
 		/*Genero el codigo de finalizacion de ejecucion del codigo*/   
@@ -90,6 +164,8 @@ public class Generador {
 			generarValor(nodo);
 		}else if (nodo instanceof NodoBooleano){
 			generarBooleano(nodo);
+		}else if (nodo instanceof NodoCadena){
+			generarCadena(nodo);
 		}else if (nodo instanceof NodoIdentificador){
 			generarIdentificador(nodo);
 		}else if (nodo instanceof NodoArreglo){
@@ -208,8 +284,20 @@ public class Generador {
 		if(UtGen.debug) UtGen.emitirComentario("-> escribir");
 		/* Genero el codigo de la expresion que va a ser escrita en pantalla */
 		generarNodo(n.getExpresion());
-		/* Ahora genero la salida */
-		UtGen.emitirRO("OUT", UtGen.AC, 0, 0, "escribir: genero la salida de la expresion");
+		TipoDato tipoExp = inferirTipo(n.getExpresion());
+		if (tipoExp == TipoDato.STRING) {
+			/* Bucle de salida para cadenas: imprime caracter a caracter hasta terminador 0 */
+			UtGen.emitirComentario("escribir cadena: bucle caracter a caracter");
+			UtGen.emitirRM("LD", UtGen.AC1, 0, UtGen.AC, "str: cargar char actual dMem[reg[0]] en AC1");
+			UtGen.emitirRM("JEQ", UtGen.AC1, 3, UtGen.PC, "str: si char==0 saltar al fin del bucle");
+			UtGen.emitirRO("OUT", UtGen.AC1, 0, 0, "str: imprimir caracter");
+			UtGen.emitirRM("LDA", UtGen.AC, 1, UtGen.AC, "str: avanzar puntero p = p + 1");
+			UtGen.emitirRM("LDA", UtGen.PC, -5, UtGen.PC, "str: repetir bucle");
+			UtGen.emitirComentario("escribir cadena: fin del bucle");
+		} else {
+			/* Ahora genero la salida numerica/booleana normal */
+			UtGen.emitirRO("OUT", UtGen.AC, 0, 0, "escribir: genero la salida de la expresion");
+		}
 		if(UtGen.debug) UtGen.emitirComentario("<- escribir");
 	}
 	
@@ -226,6 +314,14 @@ public class Generador {
 		int val = n.getValor() ? 1 : 0;
 		UtGen.emitirRM("LDC", UtGen.AC, val, 0, "cargar constante booleana: " + n.getValor());
 		if(UtGen.debug) UtGen.emitirComentario("<- booleano");
+	}
+
+	private static void generarCadena(NodoBase nodo){
+		NodoCadena n = (NodoCadena)nodo;
+		if(UtGen.debug) UtGen.emitirComentario("-> cadena literal");
+		int dir = tablaCadenas.containsKey(n.getValor()) ? tablaCadenas.get(n.getValor()) : 0;
+		UtGen.emitirRM("LDC", UtGen.AC, dir, 0, "cargar direccion de cadena: \"" + n.getValor() + "\"");
+		if(UtGen.debug) UtGen.emitirComentario("<- cadena literal");
 	}
 	
 	private static void generarIdentificador(NodoBase nodo){
@@ -294,6 +390,20 @@ public class Generador {
 		UtGen.emitirComentario("Preludio estandar:");
 		UtGen.emitirRM("LD", UtGen.MP, 0, UtGen.AC, "cargar la maxima direccion desde la localidad 0");
 		UtGen.emitirRM("ST", UtGen.AC, 0, UtGen.AC, "limpio el registro de la localidad 0");
+		if (!tablaCadenas.isEmpty()) {
+			UtGen.emitirComentario("Inicializacion de literales de cadena en dMem:");
+			for (Map.Entry<String, Integer> entrada : tablaCadenas.entrySet()) {
+				String texto = entrada.getKey();
+				int base = entrada.getValue();
+				for (int i = 0; i < texto.length(); i++) {
+					int c = (int) texto.charAt(i);
+					UtGen.emitirRM("LDC", UtGen.AC, c, 0, "char '" + texto.charAt(i) + "'");
+					UtGen.emitirRM("ST", UtGen.AC, base + i, UtGen.GP, "dMem[" + (base + i) + "] = '" + texto.charAt(i) + "'");
+				}
+				UtGen.emitirRM("LDC", UtGen.AC, 0, 0, "terminador nulo 0");
+				UtGen.emitirRM("ST", UtGen.AC, base + texto.length(), UtGen.GP, "dMem[" + (base + texto.length()) + "] = 0");
+			}
+		}
 	}
 
 }

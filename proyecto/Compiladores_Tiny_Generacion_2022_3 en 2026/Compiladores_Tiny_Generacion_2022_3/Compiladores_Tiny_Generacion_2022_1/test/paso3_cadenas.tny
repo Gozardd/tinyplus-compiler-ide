@@ -1,0 +1,5 @@
+string msg;
+msg := "Hola Tiny";
+write msg;
+write "!";
+write 2026

@@ -247,8 +247,13 @@ public class TMSimulador {
                             reg[instr.r] = valorIn;
                             break;
                         case "OUT":
-                            salidas.add(reg[instr.r]);
-                            System.out.println("SALIDA: " + reg[instr.r]);
+                            int v = reg[instr.r];
+                            salidas.add(v);
+                            if (v >= 32 && v <= 126) {
+                                System.out.println("SALIDA: " + v + " ('" + (char)v + "')");
+                            } else {
+                                System.out.println("SALIDA: " + v);
+                            }
                             break;
                         case "ADD":
                             reg[instr.r] = reg[instr.s] + reg[instr.t];

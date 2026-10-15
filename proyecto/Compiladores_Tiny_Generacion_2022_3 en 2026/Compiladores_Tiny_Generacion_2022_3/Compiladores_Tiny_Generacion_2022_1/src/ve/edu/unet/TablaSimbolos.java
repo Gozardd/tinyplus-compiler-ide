@@ -96,6 +96,11 @@ public class TablaSimbolos {
 		return simbolo != null ? simbolo.getTamanoArreglo() : 0;
 	}
 
+	public int getTamanoGlobal() {
+		Ambito global = pila.peekLast();
+		return global != null ? global.siguienteDireccion : 0;
+	}
+
 	/* Recorre el AST completo y registra cada declaracion en el ambito correspondiente.
 	 * A diferencia del Tiny original, aqui NO se inserta al primer uso de un identificador:
 	 * solo NodoDeclaracion (variables/arreglos) y NodoFuncion (funciones/procedimientos y
