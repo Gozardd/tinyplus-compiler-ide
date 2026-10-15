@@ -4,6 +4,8 @@ import ve.edu.unet.nodosAST.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Generador {
 	/* Ilustracion de la disposicion de la memoria en
@@ -37,6 +39,20 @@ public class Generador {
 	 */
 	private static Map<String, Integer> tablaCadenas = new LinkedHashMap<String, Integer>();
 	private static int siguienteDirCadena = 0;
+
+	/* Registro de direcciones de entrada (PC) de cada funcion */
+	private static Map<String, Integer> direccionesFunciones = new HashMap<String, Integer>();
+
+	/* Estructura para resolver llamadas hacia adelante (backpatching) */
+	private static class LlamadaPendiente {
+		int locSalto;
+		String nombreFuncion;
+		public LlamadaPendiente(int locSalto, String nombreFuncion) {
+			this.locSalto = locSalto;
+			this.nombreFuncion = nombreFuncion;
+		}
+	}
+	private static List<LlamadaPendiente> llamadasPendientes = new ArrayList<LlamadaPendiente>();
 	
 	public static void setTablaSimbolos(TablaSimbolos tabla){
 		tablaSimbolos = tabla;
@@ -48,6 +64,10 @@ public class Generador {
 
 	public static Map<String, Integer> getTablaCadenas() {
 		return tablaCadenas;
+	}
+
+	public static Map<String, Integer> getDireccionesFunciones() {
+		return direccionesFunciones;
 	}
 
 	public static TipoDato inferirTipo(NodoBase nodo) {
@@ -116,12 +136,51 @@ public class Generador {
 		System.out.println("------ CODIGO OBJETO DEL LENGUAJE TINY GENERADO PARA LA TM ------");
 		System.out.println();
 		System.out.println();
+		UtGen.reiniciar();
+		desplazamientoTmp = 0;
+		paramsActuales.clear();
 		tablaCadenas.clear();
 		siguienteDirCadena = tablaSimbolos != null ? tablaSimbolos.getTamanoGlobal() : 0;
 		recolectarCadenas(raiz);
 		generarPreludioEstandar();
-		generarSecuencia(raiz);
-		/*Genero el codigo de finalizacion de ejecucion del codigo*/   
+
+		// Salto inicial para evitar ejecutar funciones de manera secuencial
+		int saltoMain = UtGen.emitirSalto(1);
+		UtGen.emitirComentario("Salto al inicio del programa principal");
+
+		// Fase A: Compilar todas las funciones y procedimientos declarados a nivel raiz
+		direccionesFunciones.clear();
+		llamadasPendientes.clear();
+
+		NodoBase actual = raiz;
+		while (actual != null) {
+			if (actual instanceof NodoFuncion) {
+				generarFuncion((NodoFuncion) actual);
+			}
+			actual = actual.getHermanoDerecha();
+		}
+
+		// Parchear llamadas hacia adelante pendientes
+		parchearLlamadasPendientes();
+
+		// Parchear saltoMain hacia la primera instruccion del programa principal (main)
+		int dirMain = UtGen.emitirSalto(0);
+		UtGen.cargarRespaldo(saltoMain);
+		UtGen.emitirRM_Abs("LDA", UtGen.PC, dirMain, "salto al programa principal (main)");
+		UtGen.restaurarRespaldo();
+
+		// Fase B: Generar sentencias del main (todo lo que no sea declaracion ni funcion)
+		desplazamientoTmp = 0;
+		paramsActuales.clear();
+		actual = raiz;
+		while (actual != null) {
+			if (!(actual instanceof NodoDeclaracion) && !(actual instanceof NodoFuncion)) {
+				generarNodo(actual);
+			}
+			actual = actual.getHermanoDerecha();
+		}
+
+		/* Genero el codigo de finalizacion de ejecucion del codigo */
 		UtGen.emitirComentario("Fin de la ejecucion.");
 		UtGen.emitirRO("HALT", 0, 0, 0, "");
 		System.out.println();
@@ -170,6 +229,12 @@ public class Generador {
 			generarIdentificador(nodo);
 		}else if (nodo instanceof NodoArreglo){
 			generarArreglo(nodo);
+		}else if (nodo instanceof NodoFuncion){
+			/* Las funciones se compilan en la Fase A de generarCodigoObjeto */
+		}else if (nodo instanceof NodoLlamada){
+			generarLlamada(nodo);
+		}else if (nodo instanceof NodoReturn){
+			generarReturn(nodo);
 		}else if (nodo instanceof NodoOperacion){
 			generarOperacion(nodo);
 		}else if (nodo instanceof NodoDeclaracion){
@@ -382,6 +447,121 @@ public class Generador {
 		if(UtGen.debug) UtGen.emitirComentario("<- Operacion: " + n.getOperacion());
 	}
 	
+	private static void generarFuncion(NodoFuncion f){
+		if(UtGen.debug) UtGen.emitirComentario("-> funcion: " + f.getNombre());
+		int entryPC = UtGen.emitirSalto(0);
+		direccionesFunciones.put(f.getNombre(), entryPC);
+
+		// Guardar estado del llamador
+		int prevDesplazamientoTmp = desplazamientoTmp;
+		Map<String, Integer> prevParams = paramsActuales;
+
+		// Contar parametros formales K
+		List<String> nombresParams = new ArrayList<String>();
+		NodoBase p = f.getListaParametros();
+		while (p != null) {
+			if (p instanceof NodoDeclaracion) {
+				nombresParams.add(((NodoDeclaracion) p).getVariable());
+			}
+			p = p.getHermanoDerecha();
+		}
+		int K = nombresParams.size();
+
+		// Mapear cada parametro: param_i (1-indexed) esta en MP + (K - i + 1)
+		paramsActuales = new HashMap<String, Integer>();
+		for (int i = 0; i < K; i++) {
+			int offset = K - (i + 1) + 1; // K - i
+			paramsActuales.put(nombresParams.get(i), offset);
+		}
+
+		// Temporales locales de la funcion comienzan en MP - 2
+		// (MP+0 es Old MP, MP-1 es Return PC)
+		desplazamientoTmp = -2;
+
+		// Generar cuerpo de la funcion
+		generarSecuencia(f.getCuerpo());
+
+		// Epilogo obligatorio (procedimientos o funciones sin return explícito al final)
+		emitirEpilogoFuncion("epilogo por defecto de funcion/procedimiento " + f.getNombre());
+
+		// Restaurar estado del llamador
+		desplazamientoTmp = prevDesplazamientoTmp;
+		paramsActuales = prevParams;
+
+		if(UtGen.debug) UtGen.emitirComentario("<- funcion: " + f.getNombre());
+	}
+
+	private static void emitirEpilogoFuncion(String comentario){
+		UtGen.emitirComentario(comentario);
+		UtGen.emitirRM("LD", 2, -1, UtGen.MP, "epilogo: reg[2] = retorno desde MP-1");
+		UtGen.emitirRM("LD", UtGen.MP, 0, UtGen.MP, "epilogo: restaurar Old MP desde MP+0");
+		UtGen.emitirRM("LDA", UtGen.PC, 0, 2, "epilogo: saltar a retorno reg[2]");
+	}
+
+	private static void generarReturn(NodoBase nodo){
+		NodoReturn n = (NodoReturn)nodo;
+		if(UtGen.debug) UtGen.emitirComentario("-> return");
+		if (n.getExpresionRetorno() != null) {
+			generarNodo(n.getExpresionRetorno()); // el valor a retornar queda en AC (reg 0)
+		}
+		emitirEpilogoFuncion("return: salir de funcion");
+		if(UtGen.debug) UtGen.emitirComentario("<- return");
+	}
+
+	private static void generarLlamada(NodoBase nodo){
+		NodoLlamada n = (NodoLlamada)nodo;
+		String nombre = n.getNombreFuncion();
+		if(UtGen.debug) UtGen.emitirComentario("-> llamada: " + nombre);
+
+		int d0 = desplazamientoTmp;
+
+		// 1. Evaluar y apilar cada argumento (en orden de izquierda a derecha)
+		NodoBase arg = n.getListaArgumentos();
+		int K = 0;
+		while (arg != null) {
+			generarNodo(arg);
+			UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "llamada " + nombre + ": push arg " + (K + 1));
+			K++;
+			arg = arg.getHermanoDerecha();
+		}
+
+		// 2. Salvar enlace de control (Old MP) en d0 - K
+		UtGen.emitirRM("ST", UtGen.MP, d0 - K, UtGen.MP, "llamada " + nombre + ": salvar Old MP en MP'-0");
+
+		// 3. Salvar direccion de retorno y activar nuevo MP'
+		// LDA 2, 3(PC): calcula direccion de instruccion de retorno (3 instrucciones abajo)
+		UtGen.emitirRM("LDA", 2, 3, UtGen.PC, "llamada " + nombre + ": calcular direccion de retorno");
+		UtGen.emitirRM("ST", 2, d0 - K - 1, UtGen.MP, "llamada " + nombre + ": salvar retorno en MP'-1");
+		UtGen.emitirRM("LDA", UtGen.MP, d0 - K, UtGen.MP, "llamada " + nombre + ": activar nuevo marco MP'");
+
+		// 4. Salto a la funcion (directo o con registro de salto pendiente)
+		if (direccionesFunciones.containsKey(nombre)) {
+			int target = direccionesFunciones.get(nombre);
+			UtGen.emitirRM_Abs("LDA", UtGen.PC, target, "llamada: saltar a funcion " + nombre);
+		} else {
+			int locSalto = UtGen.emitirSalto(1);
+			llamadasPendientes.add(new LlamadaPendiente(locSalto, nombre));
+		}
+
+		// 5. Restaurar desplazamientoTmp al volver
+		desplazamientoTmp = d0;
+
+		if(UtGen.debug) UtGen.emitirComentario("<- llamada: " + nombre);
+	}
+
+	private static void parchearLlamadasPendientes(){
+		for (LlamadaPendiente lp : llamadasPendientes) {
+			if (direccionesFunciones.containsKey(lp.nombreFuncion)) {
+				int target = direccionesFunciones.get(lp.nombreFuncion);
+				UtGen.cargarRespaldo(lp.locSalto);
+				UtGen.emitirRM_Abs("LDA", UtGen.PC, target, "parchear llamada hacia adelante a " + lp.nombreFuncion);
+				UtGen.restaurarRespaldo();
+			} else {
+				System.err.println("ERROR: Funcion '" + lp.nombreFuncion + "' invocada pero no definida.");
+			}
+		}
+	}
+
 	//TODO: enviar preludio a archivo de salida, obtener antes su nombre
 	private static void generarPreludioEstandar(){
 		UtGen.emitirComentario("Compilacion TINY para el codigo objeto TM");
