@@ -22,19 +22,6 @@ import java.io.Reader;
 	private int lineanum;
 	private boolean debug;
 
-
-/******************************************************************
-BORRAR SI NO SE NECESITA
-	//TODO: Cambiar la SF por esto o ver que se hace
-	//Crear un nuevo objeto java_cup.runtime.Symbol con informaci�n sobre el token actual sin valor
- 	  private Symbol symbol(int type){
-    		return new Symbol(type,yyline,yycolumn);
-	  }
-	//Crear un nuevo objeto java_cup.runtime.Symbol con informaci�n sobre el token actual con valor
-	  private Symbol symbol(int type,Object value){
-    		return new Symbol(type,yyline,yycolumn,value);
-	  }
-******************************************************************/
 %}
 %eofval{
     return sf.newSymbol("EOF",sym.EOF);
